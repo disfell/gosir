@@ -25,6 +25,9 @@ go.work
 *.swp
 *.swo
 *~
+.project
+.classpath
+.settings/
 
 # Database
 *.db
@@ -33,6 +36,7 @@ go.work
 
 # Config (with secrets)
 config/local.yaml
+config/config.yaml
 
 # Logs
 *.log
