@@ -1,29 +1,24 @@
 package handler
 
 import (
-	"myapp/internal/handler/auth"
-	"myapp/internal/handler/system"
-	"myapp/internal/handler/user"
-	"myapp/internal/service"
+	"gosir/internal/handler/auth"
+	"gosir/internal/handler/system"
+	"gosir/internal/handler/user"
+	"gosir/internal/service"
 
 	"github.com/labstack/echo/v4"
 )
 
 // SetupPublicRoutes 设置公开路由（无需鉴权）
 func SetupPublicRoutes(e *echo.Echo) {
+	userService := service.NewUserService()
+	authHandler := auth.New(userService)
+
 	// 系统路由
 	e.GET("/health", system.HealthCheck)
 
 	// 认证路由
-	e.POST("/auth/login", auth.Login)
-
-	// 测试 panic 接口
-	e.GET("/panic", func(c echo.Context) error {
-		// 故意触发 panic
-		var arr []int
-		_ = arr[10] // 数组越界
-		return nil
-	})
+	e.POST("/auth/login", authHandler.Login)
 }
 
 // SetupRoutes 设置受保护路由（需要鉴权）

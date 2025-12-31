@@ -2,10 +2,12 @@ package middleware
 
 import (
 	"errors"
-	"myapp/internal/common"
+	"gosir/internal/common"
+	"gosir/internal/logger"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
 )
 
 // ErrorHandler 统一错误处理中间件
@@ -16,8 +18,13 @@ func ErrorHandler() echo.HTTPErrorHandler {
 		// 检查是否是 AppError
 		var appErr *common.AppError
 		if errors.As(err, &appErr) {
-			c.Logger().Errorf("[%s %s] code=%d message=%s err=%v",
-				req.Method, req.URL.Path, appErr.Code, appErr.Message, appErr.Err)
+			logger.Logger.Error("AppError occurred",
+				zap.String("method", req.Method),
+				zap.String("path", req.URL.Path),
+				zap.Int("code", appErr.Code),
+				zap.String("message", appErr.Message),
+				zap.Error(appErr.Err),
+			)
 
 			_ = c.JSON(http.StatusOK, common.Response{
 				Code:    appErr.Code,
@@ -44,8 +51,12 @@ func ErrorHandler() echo.HTTPErrorHandler {
 				code = common.CodeNotFound
 			}
 
-			c.Logger().Errorf("[%s %s] code=%d message=%s",
-				req.Method, req.URL.Path, code, message)
+			logger.Logger.Error("HTTPError occurred",
+				zap.String("method", req.Method),
+				zap.String("path", req.URL.Path),
+				zap.Int("code", code),
+				zap.String("message", message),
+			)
 
 			_ = c.JSON(http.StatusOK, common.Response{
 				Code:    code,
@@ -56,7 +67,11 @@ func ErrorHandler() echo.HTTPErrorHandler {
 		}
 
 		// 其他未知错误
-		c.Logger().Errorf("[%s %s] unknown error: %v", req.Method, req.URL.Path, err)
+		logger.Logger.Error("Unknown error occurred",
+			zap.String("method", req.Method),
+			zap.String("path", req.URL.Path),
+			zap.Error(err),
+		)
 
 		_ = c.JSON(http.StatusOK, common.Response{
 			Code:    common.CodeInternalError,

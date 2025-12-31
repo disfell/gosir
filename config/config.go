@@ -19,16 +19,18 @@ type ServerConfig struct {
 }
 
 type DatabaseConfig struct {
-	Path string `yaml:"path"`
+	Path     string `yaml:"path"`
+	LogLevel string `yaml:"log_level"` // silent, error, warn, info
 }
 
 type JWTConfig struct {
-	Secret     string `yaml:"secret"`
-	ExpireHours int   `yaml:"expire_hours"`
+	Secret      string `yaml:"secret"`
+	ExpireHours int    `yaml:"expire_hours"`
 }
 
 type LogConfig struct {
 	Level  string `yaml:"level"`
+	Path   string `yaml:"path"`
 	Format string `yaml:"format"`
 }
 

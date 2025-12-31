@@ -1,12 +1,12 @@
 package service
 
 import (
-	"myapp/internal/database"
-	"myapp/internal/model"
-	"myapp/internal/repository"
+	"gosir/internal/model"
+	"gosir/internal/repository"
 	"time"
 
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService struct {
@@ -24,11 +24,17 @@ func (s *UserService) GetUserByID(id string) (*model.User, error) {
 }
 
 func (s *UserService) CreateUser(name, email, password string) (*model.User, error) {
+	// 密码加密
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+
 	user := &model.User{
 		ID:        uuid.New().String(),
 		Name:      name,
 		Email:     email,
-		Password:  password,
+		Password:  string(hashedPassword),
 		Status:    int(model.UserStatusNormal),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -58,11 +64,4 @@ func (s *UserService) UpdateUser(id, name, email, phone, avatar string, status *
 
 func (s *UserService) DeleteUser(id string) error {
 	return s.userRepo.Delete(id)
-}
-
-// AutoMigrate 自动迁移数据库表
-func AutoMigrate() error {
-	return database.DB.AutoMigrate(
-		&model.User{},
-	)
 }

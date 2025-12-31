@@ -1,39 +1,68 @@
 package main
 
 import (
-	"log"
+	"os"
+	"path/filepath"
 	"strconv"
 
-	"myapp/config"
-	"myapp/internal/database"
-	"myapp/internal/handler"
-	"myapp/internal/middleware"
-	"myapp/internal/service"
+	"gosir/config"
+	"gosir/internal/database"
+	"gosir/internal/handler"
+	"gosir/internal/logger"
+	"gosir/internal/middleware"
+	"gosir/internal/service"
 
 	"github.com/labstack/echo/v4"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
+	"go.uber.org/zap"
 )
 
 func main() {
 	// 加载配置
 	cfg, err := config.Load("config/config.yaml")
 	if err != nil {
-		log.Fatalf("Failed to load config: %v", err)
+		panic("Failed to load config: " + err.Error())
 	}
 
-	// 初始化数据库
-	if err := database.InitDB(cfg.Database.Path); err != nil {
-		log.Fatalf("Failed to connect database: %v", err)
+	// 创建日志目录
+	logDir := filepath.Dir(cfg.Log.Path)
+	if err := os.MkdirAll(logDir, 0755); err != nil {
+		panic("Failed to create log directory: " + err.Error())
 	}
-	defer database.CloseDB()
+
+	// 初始化日志系统
+	if err := logger.Init(cfg.Log.Path); err != nil {
+		panic("Failed to init logger: " + err.Error())
+	}
+	defer logger.Sync()
+
+	logger.Logger.Info("Starting application...")
+
+	// 初始化数据库
+	if err := database.InitDB(cfg.Database.Path, cfg.Database.LogLevel); err != nil {
+		logger.Logger.Fatal("Failed to connect database", zap.Error(err))
+	}
+	defer func() {
+		err := database.CloseDB()
+		if err != nil {
+			logger.Logger.Error("Failed to close database", zap.Error(err))
+		}
+	}()
 
 	// 自动迁移
 	if err := service.AutoMigrate(); err != nil {
-		log.Fatalf("Failed to migrate database: %v", err)
+		logger.Logger.Fatal("Failed to migrate database", zap.Error(err))
+	}
+
+	// 初始化管理员账号
+	if err := service.InitAdminUser(); err != nil {
+		logger.Logger.Fatal("Failed to init admin user", zap.Error(err))
 	}
 
 	// 创建 Echo 实例
 	e := echo.New()
+	e.HideBanner = true
+	e.Logger = &middleware.EchoLogger{} // 使用 zap logger
 
 	// 初始化 JWT
 	middleware.InitJWT(cfg.JWT.Secret, cfg.JWT.ExpireHours)
@@ -55,5 +84,8 @@ func main() {
 
 	// 启动服务
 	addr := ":" + strconv.Itoa(cfg.Server.Port)
-	e.Logger.Fatal(e.Start(addr))
+	logger.Logger.Info("Server starting", zap.String("addr", addr))
+	if err := e.Start(addr); err != nil {
+		logger.Logger.Fatal("Failed to start server", zap.Error(err))
+	}
 }

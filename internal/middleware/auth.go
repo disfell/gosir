@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"myapp/internal/common"
+	"gosir/internal/common"
 	"strings"
 	"time"
 
@@ -80,8 +80,6 @@ func GetUserID(c echo.Context) string {
 	}
 	return ""
 }
-
-
 
 // GetClaims 从 context 获取 JWT 声明
 func GetClaims(c echo.Context) *common.JWTClaims {

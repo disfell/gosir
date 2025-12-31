@@ -1,7 +1,7 @@
 package system
 
 import (
-	"myapp/internal/common"
+	"gosir/internal/common"
 
 	"github.com/labstack/echo/v4"
 )

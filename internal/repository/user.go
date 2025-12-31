@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"myapp/internal/database"
-	"myapp/internal/model"
+	"gosir/internal/database"
+	"gosir/internal/model"
 
 	"gorm.io/gorm"
 )
