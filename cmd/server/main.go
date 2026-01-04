@@ -13,7 +13,7 @@ import (
 	"gosir/internal/service"
 
 	"github.com/labstack/echo/v4"
-	echomiddleware "github.com/labstack/echo/v4/middleware"
+	echoMiddleware "github.com/labstack/echo/v4/middleware"
 	"go.uber.org/zap"
 )
 
@@ -31,38 +31,46 @@ func main() {
 	}
 
 	// 初始化日志系统
-	if err := logger.Init(cfg.Log.Path); err != nil {
+	if err := logger.InitWithConfig(&logger.LogConfig{
+		Path:   cfg.Log.Path,
+		Level:  cfg.Log.Level,
+		Format: cfg.Log.Format,
+	}); err != nil {
 		panic("Failed to init logger: " + err.Error())
 	}
 	defer logger.Sync()
 
-	logger.Logger.Info("Starting application...")
+	logger.Info("Starting application...")
 
 	// 初始化数据库
-	if err := database.InitDB(cfg.Database.Path, cfg.Database.LogLevel); err != nil {
-		logger.Logger.Fatal("Failed to connect database", zap.Error(err))
+	if err := database.InitDB(cfg.Database.Path, cfg.Database.LogLevel, logger.Log); err != nil {
+		logger.Fatal("Failed to connect database",
+			zap.Error(err),
+		)
 	}
 	defer func() {
-		err := database.CloseDB()
-		if err != nil {
-			logger.Logger.Error("Failed to close database", zap.Error(err))
+		if err := database.CloseDB(); err != nil {
+			logger.Error("Failed to close database", zap.Error(err))
 		}
 	}()
 
 	// 自动迁移
 	if err := service.AutoMigrate(); err != nil {
-		logger.Logger.Fatal("Failed to migrate database", zap.Error(err))
+		logger.Fatal("Failed to migrate database",
+			zap.Error(err),
+		)
 	}
 
 	// 初始化管理员账号
 	if err := service.InitAdminUser(); err != nil {
-		logger.Logger.Fatal("Failed to init admin user", zap.Error(err))
+		logger.Fatal("Failed to init admin user",
+			zap.Error(err),
+		)
 	}
 
 	// 创建 Echo 实例
 	e := echo.New()
 	e.HideBanner = true
-	e.Logger = &middleware.EchoLogger{} // 使用 zap logger
 
 	// 初始化 JWT
 	middleware.InitJWT(cfg.JWT.Secret, cfg.JWT.ExpireHours)
@@ -71,9 +79,9 @@ func main() {
 	e.HTTPErrorHandler = middleware.ErrorHandler()
 
 	// 全局中间件
-	e.Use(echomiddleware.RequestLogger())
-	e.Use(echomiddleware.Recover())
-	e.Use(echomiddleware.CORS())
+	e.Use(middleware.ZapLoggerMiddleware())
+	e.Use(echoMiddleware.Recover())
+	e.Use(echoMiddleware.CORS())
 
 	// 公开路由（无需鉴权）
 	handler.SetupPublicRoutes(e)
@@ -84,8 +92,13 @@ func main() {
 
 	// 启动服务
 	addr := ":" + strconv.Itoa(cfg.Server.Port)
-	logger.Logger.Info("Server starting", zap.String("addr", addr))
+	logger.Info("Server starting",
+		zap.String("addr", addr),
+		zap.String("mode", cfg.Server.Mode),
+	)
 	if err := e.Start(addr); err != nil {
-		logger.Logger.Fatal("Failed to start server", zap.Error(err))
+		logger.Fatal("Failed to start server",
+			zap.Error(err),
+		)
 	}
 }

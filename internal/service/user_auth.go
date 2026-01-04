@@ -27,3 +27,20 @@ func LoginByPassword(email, password string) (*model.User, error) {
 
 	return &user, nil
 }
+
+// LoginByAccount 通过账号（邮箱或手机号）密码登录
+func LoginByAccount(account, password string) (*model.User, error) {
+	var user model.User
+	// 查找邮箱或手机号匹配的用户
+	err := database.DB.Where("email = ? OR phone = ?", account, account).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+
+	// 验证密码
+	if err := VerifyPassword(user.Password, password); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}

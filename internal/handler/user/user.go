@@ -21,12 +21,18 @@ type Handler struct {
 
 func New(userService *service.UserService) *Handler {
 	validate := validator.New()
+
+	// 获取中文翻译器
 	zhLocale := zh.New()
 	uni := ut.New(zhLocale, zhLocale)
-	translator, _ := uni.GetTranslator("zh")
-	err := zhtranslations.RegisterDefaultTranslations(validate, translator)
-	if err != nil {
-		return nil
+	translator, ok := uni.GetTranslator("zh")
+	if !ok {
+		panic("failed to get Chinese translator")
+	}
+
+	// 注册默认翻译
+	if err := zhtranslations.RegisterDefaultTranslations(validate, translator); err != nil {
+		panic(fmt.Sprintf("failed to register translations: %v", err))
 	}
 
 	return &Handler{
@@ -89,6 +95,9 @@ func (h *Handler) CreateUser(c echo.Context) error {
 		Name     string `json:"name" validate:"required"`
 		Email    string `json:"email" validate:"required,email"`
 		Password string `json:"password" validate:"required,min=6"`
+		Phone    string `json:"phone" validate:"omitempty,max=20"`
+		Avatar   string `json:"avatar" validate:"omitempty,max=500"`
+		Status   *int   `json:"status" validate:"omitempty,oneof=1 2"`
 	}
 
 	if err := c.Bind(&req); err != nil {
@@ -99,7 +108,16 @@ func (h *Handler) CreateUser(c echo.Context) error {
 		return common.Error(c, common.CodeValidationError, h.translateValidationError(err))
 	}
 
-	user, err := h.userService.CreateUser(req.Name, req.Email, req.Password)
+	createReq := &service.CreateUserRequest{
+		Name:     req.Name,
+		Email:    req.Email,
+		Password: req.Password,
+		Phone:    req.Phone,
+		Avatar:   req.Avatar,
+		Status:   req.Status,
+	}
+
+	user, err := h.userService.CreateUser(createReq)
 	if err != nil {
 		return common.Error(c, common.CodeInternalError, "创建用户失败")
 	}

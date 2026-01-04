@@ -2,12 +2,12 @@ package middleware
 
 import (
 	"errors"
-	"gosir/internal/common"
-	"gosir/internal/logger"
-	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
+	"gosir/internal/common"
+	"gosir/internal/logger"
+	"net/http"
 )
 
 // ErrorHandler 统一错误处理中间件
@@ -18,7 +18,7 @@ func ErrorHandler() echo.HTTPErrorHandler {
 		// 检查是否是 AppError
 		var appErr *common.AppError
 		if errors.As(err, &appErr) {
-			logger.Logger.Error("AppError occurred",
+			logger.Error("AppError occurred",
 				zap.String("method", req.Method),
 				zap.String("path", req.URL.Path),
 				zap.Int("code", appErr.Code),
@@ -51,7 +51,7 @@ func ErrorHandler() echo.HTTPErrorHandler {
 				code = common.CodeNotFound
 			}
 
-			logger.Logger.Error("HTTPError occurred",
+			logger.Error("HTTPError occurred",
 				zap.String("method", req.Method),
 				zap.String("path", req.URL.Path),
 				zap.Int("code", code),
@@ -67,7 +67,7 @@ func ErrorHandler() echo.HTTPErrorHandler {
 		}
 
 		// 其他未知错误
-		logger.Logger.Error("Unknown error occurred",
+		logger.Error("Unknown error occurred",
 			zap.String("method", req.Method),
 			zap.String("path", req.URL.Path),
 			zap.Error(err),

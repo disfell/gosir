@@ -13,7 +13,7 @@ Authorization: Bearer xxx
 ###
 GET {{local}}/api/users
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYWRtaW4iLCJleHAiOjE3NjcxNzM4MDgsIm5iZiI6MTc2NzA4NzQwOCwiaWF0IjoxNzY3MDg3NDA4fQ.V8fXeoUx3m5UczWl2KnxUFrA3YhSwLA5yKR7LBf4dVs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJleHAiOjE3NjczMjc2ODksIm5iZiI6MTc2NzI0MTI4OSwiaWF0IjoxNzY3MjQxMjg5fQ.pVJWsvGVs348mZoI4qJdmqQED5NGczaXyGAETtB3A10
 
 ###
 POST {{local}}/auth/login
@@ -21,6 +21,6 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "<PASSWORD>"
+  "account": "admin@example.com",
+  "password": "admin123"
 }

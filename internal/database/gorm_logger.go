@@ -2,59 +2,57 @@ package database
 
 import (
 	"context"
-	"fmt"
 	"time"
 
-	"gosir/internal/logger"
-
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-	gormlogger "gorm.io/gorm/logger"
+	"gorm.io/gorm/logger"
 )
 
-// ZapLogger 自定义 GORM Logger，使用 zap 输出日志
+// ZapLogger 自定义 GORM Logger，使用 Zap 输出日志
 type ZapLogger struct {
-	LogLevel gormlogger.LogLevel
+	logger *zap.Logger
+	level  logger.LogLevel
 }
 
-var GormLevelToZap = map[gormlogger.LogLevel]zapcore.Level{
-	gormlogger.Silent: zapcore.DPanicLevel,
-	gormlogger.Error:  zapcore.ErrorLevel,
-	gormlogger.Warn:   zapcore.WarnLevel,
-	gormlogger.Info:   zapcore.InfoLevel,
+// NewZapLogger 创建 Zap 日志适配器
+func NewZapLogger(zapLogger *zap.Logger, level logger.LogLevel) *ZapLogger {
+	return &ZapLogger{
+		logger: zapLogger,
+		level:  level,
+	}
 }
 
 // LogMode 设置日志级别
-func (l *ZapLogger) LogMode(level gormlogger.LogLevel) gormlogger.Interface {
+func (l *ZapLogger) LogMode(level logger.LogLevel) logger.Interface {
 	newLogger := *l
-	newLogger.LogLevel = level
+	newLogger.level = level
 	return &newLogger
 }
 
 // Info 记录信息日志
 func (l *ZapLogger) Info(ctx context.Context, msg string, data ...interface{}) {
-	if l.LogLevel >= gormlogger.Info {
-		logger.Logger.Info(fmt.Sprintf(msg, data...))
+	if l.level >= logger.Info {
+		l.logger.Sugar().Infof(msg, data...)
 	}
 }
 
 // Warn 记录警告日志
 func (l *ZapLogger) Warn(ctx context.Context, msg string, data ...interface{}) {
-	if l.LogLevel >= gormlogger.Warn {
-		logger.Logger.Warn(fmt.Sprintf(msg, data...))
+	if l.level >= logger.Warn {
+		l.logger.Sugar().Warnf(msg, data...)
 	}
 }
 
 // Error 记录错误日志
 func (l *ZapLogger) Error(ctx context.Context, msg string, data ...interface{}) {
-	if l.LogLevel >= gormlogger.Error {
-		logger.Logger.Error(fmt.Sprintf(msg, data...))
+	if l.level >= logger.Error {
+		l.logger.Sugar().Errorf(msg, data...)
 	}
 }
 
 // Trace 记录 SQL 查询日志
 func (l *ZapLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
-	if l.LogLevel <= gormlogger.Silent {
+	if l.level <= logger.Silent {
 		return
 	}
 
@@ -62,21 +60,21 @@ func (l *ZapLogger) Trace(ctx context.Context, begin time.Time, fc func() (strin
 	sql, rows := fc()
 
 	switch {
-	case err != nil && l.LogLevel >= gormlogger.Error:
-		logger.Logger.Error("SQL error",
+	case err != nil && l.level >= logger.Error:
+		l.logger.Error("SQL error",
 			zap.Duration("duration", elapsed),
 			zap.Int64("rows", rows),
 			zap.String("sql", sql),
 			zap.Error(err),
 		)
-	case l.LogLevel == gormlogger.Warn && elapsed > 200*time.Millisecond:
-		logger.Logger.Warn("Slow SQL",
+	case l.level == logger.Warn && elapsed > 200*time.Millisecond:
+		l.logger.Warn("Slow SQL",
 			zap.Duration("duration", elapsed),
 			zap.Int64("rows", rows),
 			zap.String("sql", sql),
 		)
-	case l.LogLevel >= gormlogger.Info:
-		logger.Logger.Debug("SQL query",
+	case l.level >= logger.Info:
+		l.logger.Info("SQL query",
 			zap.Duration("duration", elapsed),
 			zap.Int64("rows", rows),
 			zap.String("sql", sql),

@@ -1,32 +1,34 @@
 package database
 
 import (
-	"gosir/internal/logger"
-
+	"go.uber.org/zap"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
+
+	"gosir/internal/logger"
 )
 
 var DB *gorm.DB
 
-func InitDB(dsn, logLevel string) error {
+func InitDB(dsn, logLevel string, zapLogger *zap.Logger) error {
 	var err error
 
 	// 解析日志级别
 	level := parseLogLevel(logLevel)
 
+	// 创建 Zap 日志适配器
+	zapLoggerAdapter := NewZapLogger(zapLogger, level)
+
 	DB, err = gorm.Open(sqlite.Open(dsn), &gorm.Config{
-		Logger: &ZapLogger{
-			LogLevel: level,
-		},
+		Logger: zapLoggerAdapter,
 	})
 
 	if err != nil {
 		return err
 	}
 
-	logger.Logger.Info("Database connected successfully")
+	logger.Info("Database connected successfully")
 	return nil
 }
 

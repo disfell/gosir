@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"gosir/internal/database"
 	"gosir/internal/model"
 
@@ -21,7 +22,7 @@ func (r *UserRepository) FindByID(id string) (*model.User, error) {
 	var user model.User
 	err := r.db.Where("id = ?", id).First(&user).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &UserNotFoundError{ID: id}
 		}
 		return nil, err

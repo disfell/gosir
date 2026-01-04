@@ -16,6 +16,12 @@ func InitAdminUser() error {
 	}
 
 	userService := NewUserService()
-	_, err := userService.CreateUser("管理员", "admin@example.com", "admin123")
+	createReq := &CreateUserRequest{
+		Name:     "管理员",
+		Email:    "admin@example.com",
+		Password: "admin123",
+		Status:   nil, // 使用默认状态
+	}
+	_, err := userService.CreateUser(createReq)
 	return err
 }
