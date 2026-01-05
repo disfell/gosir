@@ -27,7 +27,7 @@ func SetupRoutes(e *echo.Group) {
 	userHandler := user.New(userService)
 
 	// 用户路由
-	e.GET("/users", userHandler.GetUser)
+	e.GET("/users", userHandler.ListUsers)
 	e.POST("/users", userHandler.CreateUser)
 	e.GET("/users/:id", userHandler.GetUser)
 	e.PUT("/users/:id", userHandler.UpdateUser)
