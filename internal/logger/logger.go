@@ -18,15 +18,6 @@ type LogConfig struct {
 	Format string // json, text
 }
 
-// Init 初始化日志系统
-func Init(logPath string) error {
-	return InitWithConfig(&LogConfig{
-		Path:   logPath,
-		Level:  "info",
-		Format: "json",
-	})
-}
-
 // InitWithConfig 使用配置初始化日志
 func InitWithConfig(cfg *LogConfig) error {
 	// 创建日志文件

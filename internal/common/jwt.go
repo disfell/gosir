@@ -16,15 +16,15 @@ type JWTClaims struct {
 
 // JWTManager JWT 管理器
 type JWTManager struct {
-	secretKey string
-	expiry    time.Duration
+	secretKey  string
+	expiration time.Duration
 }
 
 // NewJWTManager 创建 JWT 管理器
-func NewJWTManager(secretKey string, expiry time.Duration) *JWTManager {
+func NewJWTManager(secretKey string, expiration time.Duration) *JWTManager {
 	return &JWTManager{
-		secretKey: secretKey,
-		expiry:    expiry,
+		secretKey:  secretKey,
+		expiration: expiration,
 	}
 }
 
@@ -33,7 +33,7 @@ func (m *JWTManager) GenerateToken(userID string) (string, error) {
 	claims := JWTClaims{
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(m.expiry)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(m.expiration)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 		},
@@ -77,4 +77,25 @@ func (m *JWTManager) RefreshToken(tokenString string) (string, error) {
 	}
 
 	return m.GenerateToken(claims.UserID)
+}
+
+// 全局 JWT 管理器实例
+var jwtManager *JWTManager
+
+// InitJWT 初始化全局 JWT 管理器
+func InitJWT(secretKey string, expiryHours int) {
+	jwtManager = NewJWTManager(secretKey, time.Duration(expiryHours)*time.Hour)
+}
+
+// GetJWTManager 获取全局 JWT 管理器实例
+func GetJWTManager() *JWTManager {
+	return jwtManager
+}
+
+// GenerateToken 使用全局 JWT 管理器生成 token
+func GenerateToken(userID string) (string, error) {
+	if jwtManager == nil {
+		return "", errors.New("JWT 管理器未初始化")
+	}
+	return jwtManager.GenerateToken(userID)
 }

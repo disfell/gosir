@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"gosir/config"
+	"gosir/internal/common"
 	"gosir/internal/database"
 	"gosir/internal/handler"
 	"gosir/internal/logger"
@@ -73,7 +74,7 @@ func main() {
 	e.HideBanner = true
 
 	// 初始化 JWT
-	middleware.InitJWT(cfg.JWT.Secret, cfg.JWT.ExpireHours)
+	common.InitJWT(cfg.JWT.Secret, cfg.JWT.ExpireHours)
 
 	// 设置统一错误处理
 	e.HTTPErrorHandler = middleware.ErrorHandler()

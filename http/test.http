@@ -13,7 +13,7 @@ Authorization: Bearer xxx
 ###
 GET {{local}}/api/users
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJleHAiOjE3NjczMjc2ODksIm5iZiI6MTc2NzI0MTI4OSwiaWF0IjoxNzY3MjQxMjg5fQ.pVJWsvGVs348mZoI4qJdmqQED5NGczaXyGAETtB3A10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMWMxMzk2Y2YtZjJlOC00MWUwLWJjMzktYTM1MzMwNzk4YWNlIiwiZXhwIjoxNzY3ODM3MTc2LCJuYmYiOjE3Njc3NTA3NzYsImlhdCI6MTc2Nzc1MDc3Nn0.0E3F41NWhLFcIMpDu6YPX8-bppmUmRSH3_oDaoDd5rs
 
 ###
 POST {{local}}/auth/login

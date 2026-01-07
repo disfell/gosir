@@ -3,18 +3,9 @@ package middleware
 import (
 	"gosir/internal/common"
 	"strings"
-	"time"
 
 	"github.com/labstack/echo/v4"
 )
-
-// jwtManager JWT 管理器实例
-var jwtManager *common.JWTManager
-
-// InitJWT 初始化 JWT 管理器
-func InitJWT(secretKey string, expiryHours int) {
-	jwtManager = common.NewJWTManager(secretKey, time.Duration(expiryHours)*time.Hour)
-}
 
 // AuthMiddleware JWT 认证中间件
 func AuthMiddleware() echo.MiddlewareFunc {
@@ -36,6 +27,11 @@ func AuthMiddleware() echo.MiddlewareFunc {
 			tokenString := parts[1]
 
 			// 验证 token
+			jwtManager := common.GetJWTManager()
+			if jwtManager == nil {
+				return common.Error(c, common.CodeUnauthorized, "JWT 管理器未初始化")
+			}
+
 			claims, err := jwtManager.ValidateToken(tokenString)
 			if err != nil {
 				return common.Error(c, common.CodeUnauthorized, "无效的 token: "+err.Error())
@@ -48,43 +44,4 @@ func AuthMiddleware() echo.MiddlewareFunc {
 			return next(c)
 		}
 	}
-}
-
-// RequireAuth 保留此函数用于特定路由的二次验证（可选）
-func RequireAuth() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			userID := c.Get("user_id")
-			if userID == nil {
-				return common.Error(c, common.CodeUnauthorized, "unauthorized")
-			}
-			return next(c)
-		}
-	}
-}
-
-// GenerateToken 生成 JWT token（供 handler 使用）
-func GenerateToken(userID string) (string, error) {
-	return jwtManager.GenerateToken(userID)
-}
-
-// ValidateToken 验证 JWT token（供 handler 使用）
-func ValidateToken(tokenString string) (*common.JWTClaims, error) {
-	return jwtManager.ValidateToken(tokenString)
-}
-
-// GetUserID 从 context 获取用户 ID
-func GetUserID(c echo.Context) string {
-	if userID, ok := c.Get("user_id").(string); ok {
-		return userID
-	}
-	return ""
-}
-
-// GetClaims 从 context 获取 JWT 声明
-func GetClaims(c echo.Context) *common.JWTClaims {
-	if claims, ok := c.Get("claims").(*common.JWTClaims); ok {
-		return claims
-	}
-	return nil
 }

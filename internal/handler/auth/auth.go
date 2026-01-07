@@ -3,7 +3,6 @@ package auth
 import (
 	"fmt"
 	"gosir/internal/common"
-	"gosir/internal/middleware"
 	"gosir/internal/service"
 	"strings"
 
@@ -77,7 +76,7 @@ func (h *Handler) Login(c echo.Context) error {
 	}
 
 	// 生成 token
-	token, err := middleware.GenerateToken(user.Email)
+	token, err := common.GenerateToken(user.ID)
 	if err != nil {
 		return common.Error(c, common.CodeInternalError, "生成 token 失败")
 	}
