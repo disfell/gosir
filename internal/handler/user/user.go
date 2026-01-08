@@ -81,6 +81,36 @@ func (h *Handler) translateValidationError(err error) string {
 	return strings.Join(fieldMessages, "；")
 }
 
+// CreateUserRequest 创建用户请求
+type CreateUserRequest struct {
+	Name     string `json:"name" validate:"required" example:"张三"`                                       // 姓名
+	Email    string `json:"email" validate:"required,email" example:"zhangsan@example.com"`              // 邮箱
+	Password string `json:"password" validate:"required,min=6" example:"password123"`                    // 密码
+	Phone    string `json:"phone" validate:"omitempty,max=20" example:"13800138000"`                     // 手机号
+	Avatar   string `json:"avatar" validate:"omitempty,max=500" example:"http://example.com/avatar.jpg"` // 头像
+	Status   *int   `json:"status" validate:"omitempty,oneof=1 2" example:"1"`                           // 状态：1-正常 2-禁用
+}
+
+// UpdateUserRequest 更新用户请求
+type UpdateUserRequest struct {
+	Name   string `json:"name" example:"李四"`                                  // 姓名
+	Email  string `json:"email" example:"lisi@example.com"`                   // 邮箱
+	Phone  string `json:"phone" example:"13900139000"`                        // 手机号
+	Avatar string `json:"avatar" example:"http://example.com/new-avatar.jpg"` // 头像
+	Status *int   `json:"status" example:"2"`                                 // 状态：1-正常 2-禁用
+}
+
+// GetUser 获取用户详情
+// @Summary      获取用户详情
+// @Description  根据用户ID获取用户详细信息
+// @Tags         用户管理
+// @Accept       json
+// @Produce      json
+// @Security     Bearer
+// @Param        id path string true "用户ID"
+// @Success      200 {object} common.Response{data=model.UserResponse}
+// @Failure      404 {object} common.Response
+// @Router       /api/users/{id} [get]
 func (h *Handler) GetUser(c echo.Context) error {
 	id := c.Param("id")
 	user, err := h.userService.GetUserByID(id)
@@ -90,15 +120,20 @@ func (h *Handler) GetUser(c echo.Context) error {
 	return common.Success(c, user)
 }
 
+// CreateUser 创建用户
+// @Summary      创建用户
+// @Description  创建新用户
+// @Tags         用户管理
+// @Accept       json
+// @Produce      json
+// @Security     Bearer
+// @Param        request body CreateUserRequest true "用户信息"
+// @Success      201 {object} common.Response{data=model.UserResponse}
+// @Failure      400 {object} common.Response
+// @Failure      500 {object} common.Response
+// @Router       /api/users [post]
 func (h *Handler) CreateUser(c echo.Context) error {
-	var req struct {
-		Name     string `json:"name" validate:"required"`
-		Email    string `json:"email" validate:"required,email"`
-		Password string `json:"password" validate:"required,min=6"`
-		Phone    string `json:"phone" validate:"omitempty,max=20"`
-		Avatar   string `json:"avatar" validate:"omitempty,max=500"`
-		Status   *int   `json:"status" validate:"omitempty,oneof=1 2"`
-	}
+	var req CreateUserRequest
 
 	if err := c.Bind(&req); err != nil {
 		return common.Error(c, common.CodeBadRequest, "请求参数解析失败")
@@ -124,6 +159,16 @@ func (h *Handler) CreateUser(c echo.Context) error {
 	return common.Created(c, user)
 }
 
+// ListUsers 获取用户列表
+// @Summary      获取用户列表
+// @Description  获取所有用户列表
+// @Tags         用户管理
+// @Accept       json
+// @Produce      json
+// @Security     Bearer
+// @Success      200 {object} common.Response{data=[]model.UserResponse}
+// @Failure      500 {object} common.Response
+// @Router       /api/users [get]
 func (h *Handler) ListUsers(c echo.Context) error {
 	users, err := h.userService.GetAllUsers()
 	if err != nil {
@@ -132,15 +177,22 @@ func (h *Handler) ListUsers(c echo.Context) error {
 	return common.Success(c, users)
 }
 
+// UpdateUser 更新用户
+// @Summary      更新用户
+// @Description  更新用户信息
+// @Tags         用户管理
+// @Accept       json
+// @Produce      json
+// @Security     Bearer
+// @Param        id path string true "用户ID"
+// @Param        request body UpdateUserRequest true "用户信息"
+// @Success      200 {object} common.Response{data=model.UserResponse}
+// @Failure      400 {object} common.Response
+// @Failure      404 {object} common.Response
+// @Router       /api/users/{id} [put]
 func (h *Handler) UpdateUser(c echo.Context) error {
 	id := c.Param("id")
-	var req struct {
-		Name   string `json:"name"`
-		Email  string `json:"email"`
-		Phone  string `json:"phone"`
-		Avatar string `json:"avatar"`
-		Status *int   `json:"status"`
-	}
+	var req UpdateUserRequest
 
 	if err := c.Bind(&req); err != nil {
 		return common.Error(c, common.CodeBadRequest, "请求参数解析失败")
@@ -153,6 +205,17 @@ func (h *Handler) UpdateUser(c echo.Context) error {
 	return common.Success(c, user)
 }
 
+// DeleteUser 删除用户
+// @Summary      删除用户
+// @Description  根据用户ID删除用户
+// @Tags         用户管理
+// @Accept       json
+// @Produce      json
+// @Security     Bearer
+// @Param        id path string true "用户ID"
+// @Success      200 {object} common.Response
+// @Failure      404 {object} common.Response
+// @Router       /api/users/{id} [delete]
 func (h *Handler) DeleteUser(c echo.Context) error {
 	id := c.Param("id")
 	err := h.userService.DeleteUser(id)

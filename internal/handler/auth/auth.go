@@ -45,17 +45,27 @@ func New(userService *service.UserService) *Handler {
 
 // LoginRequest 登录请求
 type LoginRequest struct {
-	Account  string `json:"account" validate:"required"` // 账号（邮箱或手机号）
-	Password string `json:"password" validate:"required"`
+	Account  string `json:"account" validate:"required" example:"admin"`        // 账号（邮箱或手机号）
+	Password string `json:"password" validate:"required" example:"password123"` // 密码
 }
 
 // LoginResponse 登录响应
 type LoginResponse struct {
-	Token string      `json:"token"`
-	User  interface{} `json:"user"`
+	Token string      `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."` // JWT token
+	User  interface{} `json:"user"`                                                    // 用户信息
 }
 
 // Login 登录
+// @Summary      用户登录
+// @Description  使用账号和密码登录系统
+// @Tags         认证
+// @Accept       json
+// @Produce      json
+// @Param        request body LoginRequest true "登录信息"
+// @Success      200 {object} common.Response{data=LoginResponse}
+// @Failure      400 {object} common.Response
+// @Failure      401 {object} common.Response
+// @Router       /auth/login [post]
 func (h *Handler) Login(c echo.Context) error {
 	var req LoginRequest
 

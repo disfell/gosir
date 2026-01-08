@@ -1,17 +1,15 @@
-# Binaries
+# Binaries for programs and plugins
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
-gosir
 
 # Test binary, built with `go test -c`
 *.test
 
 # Output of the go coverage tool
 *.out
-*.profile
 
 # Dependency directories
 vendor/
@@ -19,28 +17,36 @@ vendor/
 # Go workspace file
 go.work
 
+# Build output
+gosir
+bin/
+
 # IDE
-.idea/
 .vscode/
+.idea/
 *.swp
 *.swo
 *~
-.project
-.classpath
-.settings/
+.DS_Store
+
+# Config
+config/local.yaml
 
 # Database
 *.db
-*.sqlite
-*.sqlite3
-
-# Config (with secrets)
-config/local.yaml
-config/config.yaml
+*.db-shm
+*.db-wal
+data/
 
 # Logs
+logs/
 *.log
 
-# OS
-.DS_Store
-Thumbs.db
+# Temporary files
+*.tmp
+*.temp
+
+# Docs (generated)
+docs/docs.go
+docs/swagger.json
+docs/swagger.yaml

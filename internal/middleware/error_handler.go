@@ -3,11 +3,12 @@ package middleware
 import (
 	"errors"
 
-	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
 	"gosir/internal/common"
 	"gosir/internal/logger"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
 )
 
 // ErrorHandler 统一错误处理中间件

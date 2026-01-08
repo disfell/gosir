@@ -196,6 +196,50 @@ go test ./...
 - 配置文件包含敏感信息，已添加到 `.gitignore`
 - 建议使用环境变量覆盖敏感配置
 
+## Swagger 文档
+
+项目集成了 Swagger API 文档，启动服务后访问：
+
+```
+http://localhost:1323/swagger/index.html
+```
+
+更新 Swagger 文档：
+
+```bash
+# 使用 swag 生成文档
+swag init -g cmd/server/main.go -o docs
+
+# 或使用 Makefile
+make swagger
+```
+
+## Makefile 命令
+
+项目提供了 Makefile 简化常用操作：
+
+```bash
+make build       # 构建应用
+make run         # 运行应用
+make test        # 运行测试
+make clean       # 清理构建文件
+make swagger     # 生成 Swagger 文档
+docker-build     # 构建 Docker 镜像
+docker-run       # 运行 Docker 容器
+docker-down      # 停止 Docker 容器
+```
+
+## Docker 部署
+
+项目支持 Docker 容器化部署，详细文档请查看 `DEPLOYMENT.md`。
+
+快速启动：
+
+```bash
+cd docker
+docker compose up -d
+```
+
 ## License
 
 MIT

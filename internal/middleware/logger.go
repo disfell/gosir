@@ -3,9 +3,10 @@ package middleware
 import (
 	"time"
 
+	"gosir/internal/logger"
+
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
-	"gosir/internal/logger"
 )
 
 // ZapLoggerMiddleware Echo 请求日志中间件

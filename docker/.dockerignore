@@ -1,0 +1,45 @@
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# 日志
+logs/
+
+# 数据
+data.db
+data/
+
+# 临时文件
+*.tmp
+*.temp
+
+# 测试
+*_test.go
+http/
+
+# 文档
+docs/
+README.md
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 编译产物
+bin/
+gosir
+
+# 配置（生产环境）
+config/local.yaml

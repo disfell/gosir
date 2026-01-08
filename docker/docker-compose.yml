@@ -1,0 +1,39 @@
+services:
+  gosir:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: gosir-app
+    ports:
+      - "1323:1323"
+    environment:
+      # 服务器配置
+      - SERVER_PORT=1323
+      - SERVER_MODE=release
+      # 数据库配置
+      - DATABASE_PATH=/app/data/data.db
+      - DATABASE_LOG_LEVEL=warn
+      # JWT配置 (生产环境请修改)
+      - JWT_SECRET=${JWT_SECRET:-XC0VfuGRumdG47PqxvqC7OIDWuyGY0bUVr6+o1CHHoY=}
+      - JWT_EXPIRE_HOURS=24
+      # 日志配置
+      - LOG_LEVEL=info
+      - LOG_PATH=/app/logs/app.log
+      - LOG_FORMAT=json
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ../config/config.yaml:/app/config/config.yaml:ro
+    restart: unless-stopped
+    networks:
+      - gosir-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:1323/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  gosir-network:
+    driver: bridge

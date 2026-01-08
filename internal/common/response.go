@@ -8,28 +8,28 @@ import (
 
 // Response 统一响应格式
 type Response struct {
-	Code    int         `json:"code"`    // 业务状态码
-	Message string      `json:"message"` // 响应消息
-	Data    interface{} `json:"data"`    // 响应数据
+	Code    int         `json:"code" example:"0"`          // 业务状态码
+	Message string      `json:"message" example:"success"` // 响应消息
+	Data    interface{} `json:"data"`                      // 响应数据
 }
 
 // Pagination 分页数据
 type Pagination struct {
-	Page     int         `json:"page"`      // 当前页
-	PageSize int         `json:"page_size"` // 每页数量
-	Total    int64       `json:"total"`     // 总数
-	Items    interface{} `json:"items"`     // 数据列表
+	Page     int         `json:"page" example:"1"`       // 当前页
+	PageSize int         `json:"page_size" example:"10"` // 每页数量
+	Total    int64       `json:"total" example:"100"`    // 总数
+	Items    interface{} `json:"items"`                  // 数据列表
 }
 
 // 常用业务状态码
 const (
-	CodeSuccess       = 0      // 成功
-	CodeBadRequest    = 400    // 请求参数错误
-	CodeUnauthorized  = 401    // 未授权
-	CodeForbidden     = 403    // 禁止访问
-	CodeNotFound      = 404    // 资源不存在
-	CodeInternalError = 500    // 服务器内部错误
-	CodeValidationError = 422  // 参数验证错误
+	CodeSuccess         = 0   // 成功
+	CodeBadRequest      = 400 // 请求参数错误
+	CodeUnauthorized    = 401 // 未授权
+	CodeForbidden       = 403 // 禁止访问
+	CodeNotFound        = 404 // 资源不存在
+	CodeInternalError   = 500 // 服务器内部错误
+	CodeValidationError = 422 // 参数验证错误
 )
 
 // 响应消息映射
@@ -44,6 +44,7 @@ var codeMessages = map[int]string{
 }
 
 // Success 成功响应
+// @Success      200 {object} Response
 func Success(c echo.Context, data interface{}) error {
 	return c.JSON(http.StatusOK, Response{
 		Code:    CodeSuccess,
@@ -71,6 +72,7 @@ func Created(c echo.Context, data interface{}) error {
 }
 
 // Error 错误响应
+// @Failure      200 {object} Response
 func Error(c echo.Context, code int, message string) error {
 	if message == "" {
 		message = codeMessages[code]

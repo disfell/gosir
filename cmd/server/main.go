@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"gosir/config"
+	_ "gosir/docs" // 导入 swagger 文档
 	"gosir/internal/common"
 	"gosir/internal/database"
 	"gosir/internal/handler"
@@ -18,6 +19,25 @@ import (
 	"go.uber.org/zap"
 )
 
+// @title           Gosir API
+// @version         1.0
+// @description     一个基于 Go 语言开发的 REST API 服务，使用 Echo 框架构建
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  MIT
+// @license.url   https://opensource.org/licenses/MIT
+
+// @host      localhost:1323
+// @BasePath  /
+
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+// @description 请输入 JWT token，格式：Bearer <token>
 func main() {
 	// 加载配置
 	cfg, err := config.Load("config/config.yaml")

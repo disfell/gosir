@@ -7,6 +7,7 @@ import (
 	"gosir/internal/service"
 
 	"github.com/labstack/echo/v4"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 // SetupPublicRoutes 设置公开路由（无需鉴权）
@@ -16,6 +17,9 @@ func SetupPublicRoutes(e *echo.Echo) {
 
 	// 系统路由
 	e.GET("/health", system.HealthCheck)
+
+	// Swagger 文档路由
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	// 认证路由
 	e.POST("/auth/login", authHandler.Login)
