@@ -17,6 +17,9 @@ RUN apk add --no-cache \
     build-base \
     sqlite-dev
 
+# 安装 swag 工具用于生成 Swagger 文档
+RUN go install github.com/swaggo/swag/cmd/swag@latest
+
 # 复制依赖文件
 COPY go.mod go.sum ./
 
@@ -25,6 +28,10 @@ RUN go mod download
 
 # 复制源代码
 COPY . .
+
+# 生成 Swagger 文档（如果代码中有 swagger 注解）
+ENV PATH="${PATH}:/root/go/bin"
+RUN swag init -g cmd/server/main.go -o docs || echo "Swagger generation skipped or failed, continuing..."
 
 # 构建应用（启用 CGO 以支持 SQLite）
 RUN go build \

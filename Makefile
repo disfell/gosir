@@ -1,19 +1,34 @@
 # Makefile for Gosir project
 
-.PHONY: help build run test clean swagger docs docker-build docker-run docker-down
+.PHONY: help build run test clean swagger docs \
+	docker-build docker-deploy docker-deploy-full docker-start docker-stop docker-restart docker-logs docker-clean docker-status docker-help
 
 # Default target
 help:
-	@echo "Available targets:"
-	@echo "  make build       - Build the application"
-	@echo "  make run         - Run the application"
-	@echo "  make test        - Run tests"
-	@echo "  make clean       - Clean build artifacts"
-	@echo "  make swagger     - Generate Swagger documentation"
-	@echo "  make docs        - Same as swagger (alias)"
-	@echo "  make docker-build - Build Docker image"
-	@echo "  make docker-run   - Run Docker containers"
-	@echo "  make docker-down  - Stop Docker containers"
+	@echo "========================================="
+	@echo "  Gosir Makefile"
+	@echo "========================================="
+	@echo ""
+	@echo "应用开发："
+	@echo "  make build        - Build the application"
+	@echo "  make run          - Run the application"
+	@echo "  make test         - Run tests"
+	@echo "  make clean        - Clean build artifacts"
+	@echo "  make swagger      - Generate Swagger documentation"
+	@echo "  make docs         - Same as swagger (alias)"
+	@echo ""
+	@echo "Docker 操作（使用统一的部署脚本）："
+	@echo "  make docker-build       - Build Docker image"
+	@echo "  make docker-deploy      - Deploy Docker containers (existing image)"
+	@echo "  make docker-deploy-full - Build and deploy (rebuild image)"
+	@echo "  make docker-start        - Start Docker containers"
+	@echo "  make docker-stop         - Stop Docker containers"
+	@echo "  make docker-restart      - Restart Docker containers"
+	@echo "  make docker-logs         - Show Docker logs"
+	@echo "  make docker-clean        - Clean Docker unused resources (reclaim disk space)"
+	@echo "  make docker-status       - Show Docker status"
+	@echo "  make docker-help         - Show Docker deployment help"
+	@echo ""
 
 # Build the application
 build:
@@ -45,15 +60,33 @@ swagger:
 # Alias for swagger
 docs: swagger
 
-# Docker operations
+# Docker operations (使用统一的部署脚本)
 docker-build:
-	@echo "Building Docker image..."
-	@cd docker && docker compose build
+	@cd docker && ./deploy.sh build
 
-docker-run:
-	@echo "Starting Docker containers..."
-	@cd docker && docker compose up -d
+docker-deploy:
+	@cd docker && ./deploy.sh deploy
 
-docker-down:
-	@echo "Stopping Docker containers..."
+docker-deploy-full:
+	@cd docker && ./deploy.sh deploy-with-build
+
+docker-start:
+	@cd docker && ./deploy.sh start
+
+docker-stop:
 	@cd docker && docker compose down
+
+docker-restart:
+	@cd docker && ./deploy.sh restart
+
+docker-logs:
+	@cd docker && ./deploy.sh logs
+
+docker-clean:
+	@cd docker && ./deploy.sh clean
+
+docker-status:
+	@cd docker && ./deploy.sh status
+
+docker-help:
+	@cd docker && ./deploy.sh help

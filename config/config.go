@@ -1,7 +1,13 @@
 package config
 
 import (
-	"github.com/spf13/viper"
+	"fmt"
+	"strings"
+
+	"github.com/knadh/koanf/parsers/yaml"
+	"github.com/knadh/koanf/providers/env"
+	"github.com/knadh/koanf/providers/file"
+	koanf "github.com/knadh/koanf/v2"
 )
 
 type Config struct {
@@ -34,60 +40,49 @@ type LogConfig struct {
 
 // Load 加载配置（支持配置文件和环境变量，环境变量优先级更高）
 func Load(path string) (*Config, error) {
-	v := viper.New()
+	k := koanf.New(".")
 
-	// 设置配置文件路径
-	v.SetConfigFile(path)
+	// 1. 设置默认值
+	_ = k.Set("server.port", 1323)
+	_ = k.Set("server.mode", "debug")
+	_ = k.Set("database.log_level", "info")
+	_ = k.Set("jwt.expire_hours", 24)
+	_ = k.Set("log.level", "info")
+	_ = k.Set("log.format", "json")
 
-	// 设置默认值
-	setDefaults(v)
-
-	// 读取配置文件
-	if err := v.ReadInConfig(); err != nil {
-		return nil, err
+	// 2. 加载配置文件
+	if err := k.Load(file.Provider(path), yaml.Parser()); err != nil {
+		return nil, fmt.Errorf("failed to load config file: %w", err)
 	}
 
-	// 支持环境变量
-	v.AutomaticEnv()
+	// 3. 加载环境变量（覆盖配置文件）
+	// 自动读取所有环境变量，格式：SECTION_KEY -> section.key
+	if err := k.Load(env.Provider("", "_", func(s string) string {
+		return strings.ToLower(strings.ReplaceAll(s, "_", "."))
+	}), nil); err != nil {
+		return nil, fmt.Errorf("failed to load environment variables: %w", err)
+	}
 
-	// 绑定特定的环境变量到配置项
-	bindEnvVariables(v)
-
-	// 解析配置到结构体
-	var cfg Config
-	if err := v.Unmarshal(&cfg); err != nil {
-		return nil, err
+	// 4. 构建配置结构体（直接从 Koanf 读取）
+	cfg := Config{
+		Server: ServerConfig{
+			Port: k.Int("server.port"),
+			Mode: k.String("server.mode"),
+		},
+		Database: DatabaseConfig{
+			Path:     k.String("database.path"),
+			LogLevel: k.String("database.log_level"),
+		},
+		JWT: JWTConfig{
+			Secret:      k.String("jwt.secret"),
+			ExpireHours: k.Int("jwt.expire_hours"),
+		},
+		Log: LogConfig{
+			Level:  k.String("log.level"),
+			Path:   k.String("log.path"),
+			Format: k.String("log.format"),
+		},
 	}
 
 	return &cfg, nil
-}
-
-// setDefaults 设置默认值
-func setDefaults(v *viper.Viper) {
-	v.SetDefault("server.port", 1323)
-	v.SetDefault("server.mode", "debug")
-	v.SetDefault("database.log_level", "info")
-	v.SetDefault("jwt.expire_hours", 24)
-	v.SetDefault("log.level", "info")
-	v.SetDefault("log.format", "json")
-}
-
-// bindEnvVariables 绑定环境变量
-func bindEnvVariables(v *viper.Viper) {
-	// Server 配置
-	v.BindEnv("server.port", "SERVER_PORT")
-	v.BindEnv("server.mode", "SERVER_MODE")
-
-	// Database 配置
-	v.BindEnv("database.path", "DATABASE_PATH")
-	v.BindEnv("database.log_level", "DATABASE_LOG_LEVEL")
-
-	// JWT 配置
-	v.BindEnv("jwt.secret", "JWT_SECRET")
-	v.BindEnv("jwt.expire_hours", "JWT_EXPIRE_HOURS")
-
-	// Log 配置
-	v.BindEnv("log.level", "LOG_LEVEL")
-	v.BindEnv("log.path", "LOG_PATH")
-	v.BindEnv("log.format", "LOG_FORMAT")
 }

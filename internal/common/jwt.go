@@ -84,7 +84,8 @@ var jwtManager *JWTManager
 
 // InitJWT 初始化全局 JWT 管理器
 func InitJWT(secretKey string, expiryHours int) {
-	jwtManager = NewJWTManager(secretKey, time.Duration(expiryHours)*time.Hour)
+	expiration := time.Duration(expiryHours) * time.Hour
+	jwtManager = NewJWTManager(secretKey, expiration)
 }
 
 // GetJWTManager 获取全局 JWT 管理器实例
