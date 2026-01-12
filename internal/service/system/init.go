@@ -1,8 +1,9 @@
-package service
+package system
 
 import (
 	"gosir/internal/database"
 	"gosir/internal/model"
+	"gosir/internal/service/user"
 )
 
 // InitAdminUser 初始化管理员账号（如果不存在）
@@ -15,8 +16,8 @@ func InitAdminUser() error {
 		return nil
 	}
 
-	userService := NewUserService()
-	createReq := &CreateUserRequest{
+	userService := user.NewUserService()
+	createReq := &user.CreateUserRequest{
 		Name:     "管理员",
 		Email:    "admin@gosir.com",
 		Password: "admin123",

@@ -3,7 +3,7 @@ package user
 import (
 	"fmt"
 	"gosir/internal/common"
-	"gosir/internal/service"
+	"gosir/internal/service/user"
 	"strings"
 
 	"github.com/go-playground/locales/zh"
@@ -14,12 +14,12 @@ import (
 )
 
 type Handler struct {
-	userService *service.UserService
+	userService *user.UserService
 	validator   *validator.Validate
 	translator  ut.Translator
 }
 
-func New(userService *service.UserService) *Handler {
+func New(userService *user.UserService) *Handler {
 	validate := validator.New()
 
 	// 获取中文翻译器
@@ -143,7 +143,7 @@ func (h *Handler) CreateUser(c echo.Context) error {
 		return common.Error(c, common.CodeValidationError, h.translateValidationError(err))
 	}
 
-	createReq := &service.CreateUserRequest{
+	createReq := &user.CreateUserRequest{
 		Name:     req.Name,
 		Email:    req.Email,
 		Password: req.Password,

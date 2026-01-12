@@ -5,7 +5,7 @@ services:
       dockerfile: docker/Dockerfile
     container_name: gosir-app
     ports:
-      - "1323:1323"
+      - "${GOSIR_PORT:-1323}:1323"
     environment:
       # 服务器配置
       - SERVER_PORT=1323

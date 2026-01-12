@@ -8,11 +8,12 @@ import (
 	"gosir/config"
 	_ "gosir/docs" // 导入 swagger 文档
 	"gosir/internal/common"
+	"gosir/internal/cron"
 	"gosir/internal/database"
 	"gosir/internal/handler"
 	"gosir/internal/logger"
 	"gosir/internal/middleware"
-	"gosir/internal/service"
+	"gosir/internal/service/system"
 
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
@@ -76,18 +77,22 @@ func main() {
 	}()
 
 	// 自动迁移
-	if err := service.AutoMigrate(); err != nil {
+	if err := system.AutoMigrate(); err != nil {
 		logger.Fatal("Failed to migrate database",
 			zap.Error(err),
 		)
 	}
 
 	// 初始化管理员账号
-	if err := service.InitAdminUser(); err != nil {
+	if err := system.InitAdminUser(); err != nil {
 		logger.Fatal("Failed to init admin user",
 			zap.Error(err),
 		)
 	}
+
+	// 初始化定时任务
+	cron.Init()
+	defer cron.Stop()
 
 	// 创建 Echo 实例
 	e := echo.New()

@@ -115,9 +115,6 @@ docker_deploy_with_build() {
         echo "🛑 已停止旧容器"
     fi
 
-    docker container prune -f >/dev/null 2>&1 || true
-    docker image prune -a -f >/dev/null 2>&1 || true
-    docker builder prune -f >/dev/null 2>&1 || true
 
     echo "🔨 开始构建..."
     docker compose --progress=plain build

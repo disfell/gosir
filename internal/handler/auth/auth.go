@@ -3,7 +3,8 @@ package auth
 import (
 	"fmt"
 	"gosir/internal/common"
-	"gosir/internal/service"
+	"gosir/internal/service/auth"
+	"gosir/internal/service/user"
 	"strings"
 
 	"github.com/go-playground/locales/zh"
@@ -14,13 +15,14 @@ import (
 )
 
 type Handler struct {
-	userService *service.UserService
-	validator   *validator.Validate
-	translator  ut.Translator
+	loginService *auth.LoginService
+	userService  *user.UserService
+	validator    *validator.Validate
+	translator   ut.Translator
 }
 
 // New 创建认证处理器
-func New(userService *service.UserService) *Handler {
+func New(userService *user.UserService) *Handler {
 	validate := validator.New()
 
 	// 获取中文翻译器
@@ -37,9 +39,10 @@ func New(userService *service.UserService) *Handler {
 	}
 
 	return &Handler{
-		userService: userService,
-		validator:   validate,
-		translator:  translator,
+		loginService: auth.NewLoginService(),
+		userService:  userService,
+		validator:    validate,
+		translator:   translator,
 	}
 }
 
@@ -80,23 +83,23 @@ func (h *Handler) Login(c echo.Context) error {
 	}
 
 	// 验证账号密码
-	user, err := service.LoginByAccount(req.Account, req.Password)
+	userData, err := h.loginService.LoginByAccount(req.Account, req.Password)
 	if err != nil {
 		return common.Error(c, common.CodeUnauthorized, "账号或密码错误")
 	}
 
 	// 生成 token
-	token, err := common.GenerateToken(user.ID)
+	token, err := common.GenerateToken(userData.ID)
 	if err != nil {
 		return common.Error(c, common.CodeInternalError, "生成 token 失败")
 	}
 
 	// 不返回密码
-	user.Password = ""
+	userData.Password = ""
 
 	return common.Success(c, LoginResponse{
 		Token: token,
-		User:  user,
+		User:  userData,
 	})
 }
 

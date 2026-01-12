@@ -47,6 +47,6 @@ logs/
 *.temp
 
 # Docs (generated)
-docs/docs.go
-docs/swagger.json
-docs/swagger.yaml
+!docs/docs.go
+!docs/swagger.json
+!docs/swagger.yaml

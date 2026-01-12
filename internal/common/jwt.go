@@ -3,21 +3,33 @@ package common
 import (
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 // JWTClaims JWT 声明
 type JWTClaims struct {
 	UserID string `json:"user_id"`
+	JTI    string `json:"jti"` // JWT ID，用于标识唯一 token
 	jwt.RegisteredClaims
+}
+
+// TokenBlacklistEntry 黑名单条目
+type TokenBlacklistEntry struct {
+	JTI         string    // JWT ID
+	ExpiredAt   time.Time // token 原始过期时间
+	Blacklisted time.Time // 加入黑名单的时间
 }
 
 // JWTManager JWT 管理器
 type JWTManager struct {
 	secretKey  string
 	expiration time.Duration
+	issuer     string    // 签发者
+	blacklist  *sync.Map // token 黑名单 (本地缓存)
 }
 
 // NewJWTManager 创建 JWT 管理器
@@ -25,17 +37,22 @@ func NewJWTManager(secretKey string, expiration time.Duration) *JWTManager {
 	return &JWTManager{
 		secretKey:  secretKey,
 		expiration: expiration,
+		issuer:     "gosir",
+		blacklist:  &sync.Map{},
 	}
 }
 
 // GenerateToken 生成 JWT token
 func (m *JWTManager) GenerateToken(userID string) (string, error) {
+	now := time.Now()
 	claims := JWTClaims{
 		UserID: userID,
+		JTI:    uuid.New().String(), // 生成唯一的 JTI
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(m.expiration)),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			NotBefore: jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(now.Add(m.expiration)),
+			IssuedAt:  jwt.NewNumericDate(now),
+			NotBefore: jwt.NewNumericDate(now),
+			Issuer:    m.issuer,
 		},
 	}
 
@@ -61,6 +78,11 @@ func (m *JWTManager) ValidateToken(tokenString string) (*JWTClaims, error) {
 		return nil, errors.New("无效的 token")
 	}
 
+	// 检查 token 是否在黑名单中
+	if m.IsTokenBlacklisted(claims.JTI) {
+		return nil, errors.New("token 已失效")
+	}
+
 	return claims, nil
 }
 
@@ -71,12 +93,60 @@ func (m *JWTManager) RefreshToken(tokenString string) (string, error) {
 		return "", err
 	}
 
-	// 检查是否快过期（例如剩余时间少于 1 小时）
-	if time.Until(claims.ExpiresAt.Time) > time.Hour {
-		return "", errors.New("token 未到刷新时间")
+	// 检查 token 是否在黑名单中
+	if m.IsTokenBlacklisted(claims.JTI) {
+		return "", errors.New("token 已失效")
 	}
 
+	// 直接刷新，不限制时间
 	return m.GenerateToken(claims.UserID)
+}
+
+// AddToBlacklist 将 token 加入黑名单
+func (m *JWTManager) AddToBlacklist(jti string, expiredAt time.Time) {
+	entry := TokenBlacklistEntry{
+		JTI:         jti,
+		ExpiredAt:   expiredAt,
+		Blacklisted: time.Now(),
+	}
+	m.blacklist.Store(jti, entry)
+}
+
+// IsTokenBlacklisted 检查 token 是否在黑名单中
+func (m *JWTManager) IsTokenBlacklisted(jti string) bool {
+	if value, ok := m.blacklist.Load(jti); ok {
+		entry := value.(TokenBlacklistEntry)
+
+		// 如果 token 已经过期，从黑名单中删除
+		if time.Now().After(entry.ExpiredAt) {
+			m.blacklist.Delete(jti)
+			return false
+		}
+
+		return true
+	}
+	return false
+}
+
+// CleanupExpiredBlacklist 清理黑名单中已过期的 token
+func (m *JWTManager) CleanupExpiredBlacklist() {
+	m.blacklist.Range(func(key, value interface{}) bool {
+		entry := value.(TokenBlacklistEntry)
+		if time.Now().After(entry.ExpiredAt) {
+			m.blacklist.Delete(key)
+		}
+		return true
+	})
+}
+
+// GetBlacklistSize 获取黑名单大小
+func (m *JWTManager) GetBlacklistSize() int {
+	size := 0
+	m.blacklist.Range(func(key, value interface{}) bool {
+		size++
+		return true
+	})
+	return size
 }
 
 // 全局 JWT 管理器实例

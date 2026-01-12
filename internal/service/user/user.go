@@ -1,4 +1,4 @@
-package service
+package user
 
 import (
 	"gosir/internal/model"
@@ -21,6 +21,16 @@ func NewUserService() *UserService {
 
 func (s *UserService) GetUserByID(id string) (*model.User, error) {
 	return s.userRepo.FindByID(id)
+}
+
+// GetUserByEmail 通过邮箱获取用户
+func (s *UserService) GetUserByEmail(email string) (*model.User, error) {
+	return s.userRepo.FindByEmail(email)
+}
+
+// GetUserByEmailOrPhone 通过邮箱或手机号获取用户
+func (s *UserService) GetUserByEmailOrPhone(account string) (*model.User, error) {
+	return s.userRepo.FindByEmailOrPhone(account)
 }
 
 // CreateUserRequest 创建用户请求

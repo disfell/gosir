@@ -30,6 +30,32 @@ func (r *UserRepository) FindByID(id string) (*model.User, error) {
 	return &user, nil
 }
 
+// FindByEmail 通过邮箱查找用户
+func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
+	var user model.User
+	err := r.db.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &UserNotFoundError{ID: email}
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+// FindByEmailOrPhone 通过邮箱或手机号查找用户
+func (r *UserRepository) FindByEmailOrPhone(account string) (*model.User, error) {
+	var user model.User
+	err := r.db.Where("email = ? OR phone = ?", account, account).First(&user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &UserNotFoundError{ID: account}
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
 func (r *UserRepository) Create(user *model.User) (*model.User, error) {
 	err := r.db.Create(user).Error
 	if err != nil {

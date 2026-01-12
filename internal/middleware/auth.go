@@ -26,7 +26,7 @@ func AuthMiddleware() echo.MiddlewareFunc {
 
 			tokenString := parts[1]
 
-			// 验证 token
+			// 验证 token（包含黑名单检查）
 			jwtManager := common.GetJWTManager()
 			if jwtManager == nil {
 				return common.Error(c, common.CodeUnauthorized, "JWT 管理器未初始化")
@@ -34,12 +34,16 @@ func AuthMiddleware() echo.MiddlewareFunc {
 
 			claims, err := jwtManager.ValidateToken(tokenString)
 			if err != nil {
+				if strings.Contains(err.Error(), "已失效") {
+					return common.Error(c, common.CodeUnauthorized, "token 已失效，请重新登录")
+				}
 				return common.Error(c, common.CodeUnauthorized, "无效的 token: "+err.Error())
 			}
 
 			// 将用户信息存入 context
 			c.Set("user_id", claims.UserID)
 			c.Set("claims", claims)
+			c.Set("jti", claims.JTI)
 
 			return next(c)
 		}

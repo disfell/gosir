@@ -90,13 +90,14 @@ RUN git config --global url."https://github.com/".insteadOf git@github.com:
 ### 解决方案
 
 优化 Dockerfile 利用缓存层：
+
 ```dockerfile
 # 先复制依赖文件，利用缓存
 COPY go.mod go.sum ./
 RUN go mod download
 
 # 再复制源代码，代码变化不影响依赖下载
-COPY . .
+COPY docs .
 ```
 
 ## 问题 5: 构建镜像过大
