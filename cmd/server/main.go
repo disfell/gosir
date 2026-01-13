@@ -45,6 +45,7 @@ func main() {
 	if err != nil {
 		panic("Failed to load config: " + err.Error())
 	}
+	cfg.PrintConfig()
 
 	// 创建日志目录
 	logDir := filepath.Dir(cfg.Log.Path)
@@ -76,9 +77,16 @@ func main() {
 		}
 	}()
 
-	// 自动迁移
+	// 自动迁移核心数据表结构（使用 GORM AutoMigrate）
 	if err := system.AutoMigrate(); err != nil {
-		logger.Fatal("Failed to migrate database",
+		logger.Fatal("Failed to migrate database schema",
+			zap.Error(err),
+		)
+	}
+
+	// 执行 SQL 迁移脚本（数据初始化、索引、视图等）
+	if err := system.ExecuteSQLScripts("migrations"); err != nil {
+		logger.Fatal("Failed to execute SQL scripts",
 			zap.Error(err),
 		)
 	}

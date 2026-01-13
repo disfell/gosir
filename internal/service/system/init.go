@@ -2,14 +2,14 @@ package system
 
 import (
 	"gosir/internal/database"
-	"gosir/internal/model"
+	usermodel "gosir/internal/model/user"
 	"gosir/internal/service/user"
 )
 
 // InitAdminUser 初始化管理员账号（如果不存在）
 func InitAdminUser() error {
 	var count int64
-	database.DB.Model(&model.User{}).Where("email = ?", "admin@gosir.com").Count(&count)
+	database.DB.Model(&usermodel.User{}).Where("email = ?", "admin@gosir.com").Count(&count)
 
 	if count > 0 {
 		// 管理员已存在

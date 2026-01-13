@@ -42,7 +42,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/common.Response"
+                                    "$ref": "#/definitions/gosir_internal_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -50,7 +50,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.UserResponse"
+                                                "$ref": "#/definitions/internal_handler_user.UserResponse"
                                             }
                                         }
                                     }
@@ -61,7 +61,7 @@
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     }
                 }
@@ -100,13 +100,13 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/common.Response"
+                                    "$ref": "#/definitions/gosir_internal_common.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.UserResponse"
+                                            "$ref": "#/definitions/internal_handler_user.UserResponse"
                                         }
                                     }
                                 }
@@ -116,13 +116,13 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     }
                 }
@@ -161,13 +161,13 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/common.Response"
+                                    "$ref": "#/definitions/gosir_internal_common.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.UserResponse"
+                                            "$ref": "#/definitions/internal_handler_user.UserResponse"
                                         }
                                     }
                                 }
@@ -177,7 +177,7 @@
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     }
                 }
@@ -213,7 +213,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.UpdateUserRequest"
+                            "$ref": "#/definitions/internal_handler_user.UpdateUserRequest"
                         }
                     }
                 ],
@@ -223,13 +223,13 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/common.Response"
+                                    "$ref": "#/definitions/gosir_internal_common.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.UserResponse"
+                                            "$ref": "#/definitions/internal_handler_user.UserResponse"
                                         }
                                     }
                                 }
@@ -239,13 +239,13 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     }
                 }
@@ -280,13 +280,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     }
                 }
@@ -312,7 +312,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.LoginRequest"
+                            "$ref": "#/definitions/internal_handler_auth.LoginRequest"
                         }
                     }
                 ],
@@ -322,13 +322,13 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/common.Response"
+                                    "$ref": "#/definitions/gosir_internal_common.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/auth.LoginResponse"
+                                            "$ref": "#/definitions/internal_handler_auth.LoginResponse"
                                         }
                                     }
                                 }
@@ -338,13 +338,13 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     }
                 }
@@ -372,13 +372,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     }
                 }
@@ -404,7 +404,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.RefreshTokenRequest"
+                            "$ref": "#/definitions/internal_handler_auth.RefreshTokenRequest"
                         }
                     }
                 ],
@@ -414,13 +414,13 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/common.Response"
+                                    "$ref": "#/definitions/gosir_internal_common.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/auth.RefreshTokenResponse"
+                                            "$ref": "#/definitions/internal_handler_auth.RefreshTokenResponse"
                                         }
                                     }
                                 }
@@ -430,13 +430,13 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     }
                 }
@@ -459,7 +459,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/system.HealthResponse"
+                            "$ref": "#/definitions/internal_handler_system.HealthResponse"
                         }
                     }
                 }
@@ -467,7 +467,43 @@
         }
     },
     "definitions": {
-        "auth.LoginRequest": {
+        "gosir_internal_common.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务状态码",
+                    "type": "integer",
+                    "example": 0
+                },
+                "data": {
+                    "description": "响应数据"
+                },
+                "message": {
+                    "description": "响应消息",
+                    "type": "string",
+                    "example": "success"
+                }
+            }
+        },
+        "internal_common.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务状态码",
+                    "type": "integer",
+                    "example": 0
+                },
+                "data": {
+                    "description": "响应数据"
+                },
+                "message": {
+                    "description": "响应消息",
+                    "type": "string",
+                    "example": "success"
+                }
+            }
+        },
+        "internal_handler_auth.LoginRequest": {
             "type": "object",
             "required": [
                 "account",
@@ -486,7 +522,7 @@
                 }
             }
         },
-        "auth.LoginResponse": {
+        "internal_handler_auth.LoginResponse": {
             "type": "object",
             "properties": {
                 "token": {
@@ -499,7 +535,7 @@
                 }
             }
         },
-        "auth.RefreshTokenRequest": {
+        "internal_handler_auth.RefreshTokenRequest": {
             "type": "object",
             "required": [
                 "token"
@@ -512,7 +548,7 @@
                 }
             }
         },
-        "auth.RefreshTokenResponse": {
+        "internal_handler_auth.RefreshTokenResponse": {
             "type": "object",
             "properties": {
                 "token": {
@@ -522,21 +558,18 @@
                 }
             }
         },
-        "common.Response": {
+        "internal_handler_system.HealthResponse": {
             "type": "object",
             "properties": {
-                "code": {
-                    "description": "业务状态码",
-                    "type": "integer",
-                    "example": 0
-                },
-                "data": {
-                    "description": "响应数据"
-                },
-                "message": {
-                    "description": "响应消息",
+                "status": {
+                    "description": "状态",
                     "type": "string",
-                    "example": "success"
+                    "example": "ok"
+                },
+                "timestamp": {
+                    "description": "时间戳",
+                    "type": "string",
+                    "example": "2026-01-08T10:00:00Z"
                 }
             }
         },
@@ -587,7 +620,37 @@
                 }
             }
         },
-        "model.UserResponse": {
+        "internal_handler_user.UpdateUserRequest": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "description": "头像",
+                    "type": "string",
+                    "example": "http://example.com/new-avatar.jpg"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string",
+                    "example": "lisi@example.com"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string",
+                    "example": "李四"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string",
+                    "example": "13900139000"
+                },
+                "status": {
+                    "description": "状态：1-正常 2-禁用",
+                    "type": "integer",
+                    "example": 2
+                }
+            }
+        },
+        "internal_handler_user.UserResponse": {
             "type": "object",
             "properties": {
                 "avatar": {
@@ -625,51 +688,6 @@
                 "updated_at": {
                     "type": "string",
                     "example": "2026-01-08T10:00:00Z"
-                }
-            }
-        },
-        "system.HealthResponse": {
-            "type": "object",
-            "properties": {
-                "status": {
-                    "description": "状态",
-                    "type": "string",
-                    "example": "ok"
-                },
-                "timestamp": {
-                    "description": "时间戳",
-                    "type": "string",
-                    "example": "2026-01-08T10:00:00Z"
-                }
-            }
-        },
-        "user.UpdateUserRequest": {
-            "type": "object",
-            "properties": {
-                "avatar": {
-                    "description": "头像",
-                    "type": "string",
-                    "example": "http://example.com/new-avatar.jpg"
-                },
-                "email": {
-                    "description": "邮箱",
-                    "type": "string",
-                    "example": "lisi@example.com"
-                },
-                "name": {
-                    "description": "姓名",
-                    "type": "string",
-                    "example": "李四"
-                },
-                "phone": {
-                    "description": "手机号",
-                    "type": "string",
-                    "example": "13900139000"
-                },
-                "status": {
-                    "description": "状态：1-正常 2-禁用",
-                    "type": "integer",
-                    "example": 2
                 }
             }
         }

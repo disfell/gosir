@@ -31,7 +31,7 @@ COPY . .
 
 # 生成 Swagger 文档（如果代码中有 swagger 注解）
 ENV PATH="${PATH}:/root/go/bin"
-RUN swag init -g cmd/server/main.go -o docs || echo "Swagger generation skipped or failed, continuing..."
+RUN swag init -g cmd/server/main.go --parseDependency --parseInternal -o docs || echo "Swagger generation skipped or failed, continuing..."
 
 # 构建应用（启用 CGO 以支持 SQLite）
 RUN go build \
@@ -40,7 +40,7 @@ RUN go build \
     cmd/server/main.go
 
 # 运行阶段
-FROM alpine:latest
+FROM alpine:3.19
 
 # 安装必要的依赖
 RUN apk add --no-cache ca-certificates tzdata sqlite-libs

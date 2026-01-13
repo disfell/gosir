@@ -41,8 +41,8 @@ Gosir Docker 一键部署脚本
 
 可用命令:
     build       构建镜像
-    deploy      构建并部署
-    start       启动容器
+    deploy      部署容器
+    build_and_deploy 构建并部署
     stop        停止容器
     restart     重启容器
     logs        查看日志
@@ -63,11 +63,16 @@ check_docker() {
         print_error "错误: Docker 未安装"
         exit 1
     fi
-    
+
     if ! command -v docker compose &> /dev/null; then
         print_error "错误: Docker Compose 未安装"
         exit 1
     fi
+
+    # 输出 Docker 版本信息
+    echo "🐳 Docker 版本: $(docker --version)"
+    echo "📦 Docker Compose 版本: $(docker compose version)"
+    echo ""
 }
 
 # 清理 Docker 资源
@@ -85,22 +90,33 @@ docker_clean() {
 docker_build() {
     print_header "构建 Docker 镜像"
 
-    docker compose down >/dev/null 2>&1 || true
-    docker builder prune -f >/dev/null 2>&1 || true
+    # 使用时间戳作为版本号
+    VERSION=$(date +%Y%m%d-%H%M%S)
 
     echo "🔨 开始构建..."
-    docker compose --progress=plain build
+    echo "📦 版本号: $VERSION"
+
+    docker compose --progress=plain build \
+        --build-arg "VERSION=$VERSION"
+
+    # 获取构建后的镜像名称（从 docker-compose.yml 读取）
+    IMAGE_NAME=$(docker compose config | grep -A1 "image:" | head -n2 | tail -n1 | awk '{print $2}')
+
+    if [ -z "$IMAGE_NAME" ]; then
+        IMAGE_NAME="gosir:latest"
+    fi
+
+    # 给镜像打 tag
+    docker tag "$IMAGE_NAME" "gosir:$VERSION"
+
     print_info "✅ 构建完成！"
+    echo "   🏷️  镜像标签: gosir:$VERSION"
+    echo "   🏷️  镜像标签: $IMAGE_NAME"
 }
 
 # 部署容器
 docker_deploy() {
     print_header "部署 Docker 容器"
-
-    if docker compose down >/dev/null 2>&1; then
-        echo "🛑 已停止旧容器"
-    fi
-
     docker compose up -d
     print_info "✅ 部署完成！"
     echo "   📡 应用地址: http://localhost:1323"
@@ -108,30 +124,10 @@ docker_deploy() {
 }
 
 # 一键构建并部署
-docker_deploy_with_build() {
-    print_header "一键构建并部署"
-
-    if docker compose down >/dev/null 2>&1; then
-        echo "🛑 已停止旧容器"
-    fi
-
-
-    echo "🔨 开始构建..."
-    docker compose --progress=plain build
-    echo "🚀 部署中..."
-    docker compose up -d
-
-    print_info "✅ 部署完成！"
-    echo "   📡 应用地址: http://localhost:1323"
-    echo "   📚 Swagger: http://localhost:1323/swagger/index.html"
-}
-
-# 启动容器
-docker_start() {
-    print_header "启动 Docker 容器"
-    docker compose up -d
-    print_info "✅ 容器已启动"
-    echo "   📡 应用地址: http://localhost:1323"
+docker_build_and_deploy() {
+    docker_stop
+    docker_build
+    docker_deploy
 }
 
 # 停止容器
@@ -154,18 +150,6 @@ docker_restart() {
     echo "   📡 应用地址: http://localhost:1323"
 }
 
-# 查看日志
-docker_logs() {
-    print_header "查看容器日志"
-    docker compose logs -f
-}
-
-# 查看状态
-docker_status() {
-    print_header "Docker 状态"
-    docker compose ps
-}
-
 # 主逻辑
 main() {
     check_docker
@@ -179,8 +163,8 @@ main() {
         deploy)
             docker_deploy
             ;;
-        deploy-with-build)
-            docker_deploy_with_build
+        build_and_deploy)
+            docker_build_and_deploy
             ;;
         start)
             docker_start
@@ -191,14 +175,8 @@ main() {
         restart)
             docker_restart
             ;;
-        logs)
-            docker_logs
-            ;;
         clean)
             docker_clean
-            ;;
-        status)
-            docker_status
             ;;
         help|--help|-h)
             show_usage

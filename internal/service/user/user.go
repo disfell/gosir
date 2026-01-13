@@ -1,7 +1,7 @@
 package user
 
 import (
-	"gosir/internal/model"
+	usermodel "gosir/internal/model/user"
 	"gosir/internal/repository"
 	"time"
 
@@ -19,17 +19,17 @@ func NewUserService() *UserService {
 	}
 }
 
-func (s *UserService) GetUserByID(id string) (*model.User, error) {
+func (s *UserService) GetUserByID(id string) (*usermodel.User, error) {
 	return s.userRepo.FindByID(id)
 }
 
 // GetUserByEmail 通过邮箱获取用户
-func (s *UserService) GetUserByEmail(email string) (*model.User, error) {
+func (s *UserService) GetUserByEmail(email string) (*usermodel.User, error) {
 	return s.userRepo.FindByEmail(email)
 }
 
 // GetUserByEmailOrPhone 通过邮箱或手机号获取用户
-func (s *UserService) GetUserByEmailOrPhone(account string) (*model.User, error) {
+func (s *UserService) GetUserByEmailOrPhone(account string) (*usermodel.User, error) {
 	return s.userRepo.FindByEmailOrPhone(account)
 }
 
@@ -43,7 +43,7 @@ type CreateUserRequest struct {
 	Status   *int   `validate:"omitempty,oneof=1 2"`
 }
 
-func (s *UserService) CreateUser(req *CreateUserRequest) (*model.User, error) {
+func (s *UserService) CreateUser(req *CreateUserRequest) (*usermodel.User, error) {
 	// 密码加密
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -51,12 +51,12 @@ func (s *UserService) CreateUser(req *CreateUserRequest) (*model.User, error) {
 	}
 
 	// 设置默认状态
-	status := int(model.UserStatusNormal)
+	status := int(usermodel.UserStatusNormal)
 	if req.Status != nil {
 		status = *req.Status
 	}
 
-	user := &model.User{
+	newUser := &usermodel.User{
 		ID:        uuid.New().String(),
 		Name:      req.Name,
 		Email:     req.Email,
@@ -67,27 +67,27 @@ func (s *UserService) CreateUser(req *CreateUserRequest) (*model.User, error) {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
-	return s.userRepo.Create(user)
+	return s.userRepo.Create(newUser)
 }
 
-func (s *UserService) GetAllUsers() ([]*model.User, error) {
+func (s *UserService) GetAllUsers() ([]*usermodel.User, error) {
 	return s.userRepo.FindAll()
 }
 
-func (s *UserService) UpdateUser(id, name, email, phone, avatar string, status *int) (*model.User, error) {
-	user, err := s.userRepo.FindByID(id)
+func (s *UserService) UpdateUser(id, name, email, phone, avatar string, status *int) (*usermodel.User, error) {
+	userModel, err := s.userRepo.FindByID(id)
 	if err != nil {
 		return nil, err
 	}
-	user.Name = name
-	user.Email = email
-	user.Phone = phone
-	user.Avatar = avatar
+	userModel.Name = name
+	userModel.Email = email
+	userModel.Phone = phone
+	userModel.Avatar = avatar
 	if status != nil {
-		user.Status = *status
+		userModel.Status = *status
 	}
-	user.UpdatedAt = time.Now()
-	return s.userRepo.Update(user)
+	userModel.UpdatedAt = time.Now()
+	return s.userRepo.Update(userModel)
 }
 
 func (s *UserService) DeleteUser(id string) error {

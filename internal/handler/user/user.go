@@ -3,6 +3,7 @@ package user
 import (
 	"fmt"
 	"gosir/internal/common"
+	usermodel "gosir/internal/model/user"
 	"gosir/internal/service/user"
 	"strings"
 
@@ -12,6 +13,10 @@ import (
 	zhtranslations "github.com/go-playground/validator/v10/translations/zh"
 	"github.com/labstack/echo/v4"
 )
+
+type UserResponse struct {
+	usermodel.User
+}
 
 type Handler struct {
 	userService *user.UserService
@@ -108,16 +113,16 @@ type UpdateUserRequest struct {
 // @Produce      json
 // @Security     Bearer
 // @Param        id path string true "用户ID"
-// @Success      200 {object} common.Response{data=model.UserResponse}
+// @Success      200 {object} common.Response{data=UserResponse}
 // @Failure      404 {object} common.Response
 // @Router       /api/users/{id} [get]
 func (h *Handler) GetUser(c echo.Context) error {
 	id := c.Param("id")
-	user, err := h.userService.GetUserByID(id)
+	userModel, err := h.userService.GetUserByID(id)
 	if err != nil {
 		return common.Error(c, common.CodeNotFound, "用户不存在")
 	}
-	return common.Success(c, user)
+	return common.Success(c, userModel)
 }
 
 // CreateUser 创建用户
@@ -128,7 +133,7 @@ func (h *Handler) GetUser(c echo.Context) error {
 // @Produce      json
 // @Security     Bearer
 // @Param        request body CreateUserRequest true "用户信息"
-// @Success      201 {object} common.Response{data=model.UserResponse}
+// @Success      201 {object} common.Response{data=UserResponse}
 // @Failure      400 {object} common.Response
 // @Failure      500 {object} common.Response
 // @Router       /api/users [post]
@@ -152,11 +157,11 @@ func (h *Handler) CreateUser(c echo.Context) error {
 		Status:   req.Status,
 	}
 
-	user, err := h.userService.CreateUser(createReq)
+	newUser, err := h.userService.CreateUser(createReq)
 	if err != nil {
 		return common.Error(c, common.CodeInternalError, "创建用户失败")
 	}
-	return common.Created(c, user)
+	return common.Created(c, newUser)
 }
 
 // ListUsers 获取用户列表
@@ -166,7 +171,7 @@ func (h *Handler) CreateUser(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Security     Bearer
-// @Success      200 {object} common.Response{data=[]model.UserResponse}
+// @Success      200 {object} common.Response{data=[]UserResponse}
 // @Failure      500 {object} common.Response
 // @Router       /api/users [get]
 func (h *Handler) ListUsers(c echo.Context) error {
@@ -186,7 +191,7 @@ func (h *Handler) ListUsers(c echo.Context) error {
 // @Security     Bearer
 // @Param        id path string true "用户ID"
 // @Param        request body UpdateUserRequest true "用户信息"
-// @Success      200 {object} common.Response{data=model.UserResponse}
+// @Success      200 {object} common.Response{data=UserResponse}
 // @Failure      400 {object} common.Response
 // @Failure      404 {object} common.Response
 // @Router       /api/users/{id} [put]
@@ -198,11 +203,11 @@ func (h *Handler) UpdateUser(c echo.Context) error {
 		return common.Error(c, common.CodeBadRequest, "请求参数解析失败")
 	}
 
-	user, err := h.userService.UpdateUser(id, req.Name, req.Email, req.Phone, req.Avatar, req.Status)
+	updatedUser, err := h.userService.UpdateUser(id, req.Name, req.Email, req.Phone, req.Avatar, req.Status)
 	if err != nil {
 		return common.Error(c, common.CodeNotFound, "用户不存在")
 	}
-	return common.Success(c, user)
+	return common.Success(c, updatedUser)
 }
 
 // DeleteUser 删除用户

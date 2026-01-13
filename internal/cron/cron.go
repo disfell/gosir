@@ -101,32 +101,32 @@ func (cm *Manager) cleanupExpiredBlacklistTask() {
 
 // everyFiveSecondsTask 每5秒执行一次的任务
 func (cm *Manager) everyFiveSecondsTask() {
-	logger.Info("执行每5秒任务", zap.String("task", "everyFiveSeconds"))
+	logger.Debug("执行每5秒任务", zap.String("task", "everyFiveSeconds"))
 	// 在这里添加你的业务逻辑
 	// 例如: 清理缓存、检查状态、发送心跳等
 }
 
 // everyMinuteTask 每分钟执行一次的任务
 func (cm *Manager) everyMinuteTask() {
-	logger.Info("执行每分钟任务", zap.String("task", "everyMinute"))
+	logger.Debug("执行每分钟任务", zap.String("task", "everyMinute"))
 	// 例如: 定期统计数据、同步信息等
 }
 
 // everyHourTask 每小时执行一次的任务
 func (cm *Manager) everyHourTask() {
-	logger.Info("执行每小时任务", zap.String("task", "everyHour"))
+	logger.Debug("执行每小时任务", zap.String("task", "everyHour"))
 	// 例如: 生成报表、备份数据等
 }
 
 // dailyTask 每天凌晨2点执行的任务
 func (cm *Manager) dailyTask() {
-	logger.Info("执行每日任务", zap.String("task", "daily"))
+	logger.Debug("执行每日任务", zap.String("task", "daily"))
 	// 例如: 数据归档、日志清理、定期维护等
 }
 
 // scheduledTask 定时执行的任务
 func (cm *Manager) scheduledTask() {
-	logger.Info("执行定时任务", zap.String("task", "scheduled"))
+	logger.Debug("执行定时任务", zap.String("task", "scheduled"))
 	// 在这里添加你的具体业务逻辑
 }
 

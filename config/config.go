@@ -4,10 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/knadh/koanf/parsers/yaml"
-	"github.com/knadh/koanf/providers/env"
-	"github.com/knadh/koanf/providers/file"
-	koanf "github.com/knadh/koanf/v2"
+	"github.com/spf13/viper"
 )
 
 type Config struct {
@@ -39,50 +36,52 @@ type LogConfig struct {
 }
 
 // Load 加载配置（支持配置文件和环境变量，环境变量优先级更高）
-func Load(path string) (*Config, error) {
-	k := koanf.New(".")
+func Load(path string) (Config, error) {
+	v := viper.New()
 
-	// 1. 设置默认值
-	_ = k.Set("server.port", 1323)
-	_ = k.Set("server.mode", "debug")
-	_ = k.Set("database.log_level", "info")
-	_ = k.Set("jwt.expire_hours", 24)
-	_ = k.Set("log.level", "info")
-	_ = k.Set("log.format", "json")
+	v.SetConfigFile(path)
+	if err := v.ReadInConfig(); err != nil {
+		return Config{}, fmt.Errorf("failed to load config file: %w", err)
+	}
+	v.SetEnvPrefix("GOSIR")
+	v.AutomaticEnv()
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	// 2. 加载配置文件
-	if err := k.Load(file.Provider(path), yaml.Parser()); err != nil {
-		return nil, fmt.Errorf("failed to load config file: %w", err)
+	var cfg Config
+	if err := v.Unmarshal(&cfg); err != nil {
+		return Config{}, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
-	// 3. 加载环境变量（覆盖配置文件）
-	// 自动读取所有环境变量，格式：SECTION_KEY -> section.key
-	if err := k.Load(env.Provider("", "_", func(s string) string {
-		return strings.ToLower(strings.ReplaceAll(s, "_", "."))
-	}), nil); err != nil {
-		return nil, fmt.Errorf("failed to load environment variables: %w", err)
+	return cfg, nil
+}
+
+// PrintConfig 打印配置信息（JWT Secret 已脱敏）
+func (c Config) PrintConfig() {
+	maskSecret := func(secret string) string {
+		if len(secret) <= 8 {
+			return strings.Repeat("*", len(secret))
+		}
+		return secret[:4] + strings.Repeat("*", len(secret)-8) + secret[len(secret)-4:]
 	}
 
-	// 4. 构建配置结构体（直接从 Koanf 读取）
-	cfg := Config{
-		Server: ServerConfig{
-			Port: k.Int("server.port"),
-			Mode: k.String("server.mode"),
-		},
-		Database: DatabaseConfig{
-			Path:     k.String("database.path"),
-			LogLevel: k.String("database.log_level"),
-		},
-		JWT: JWTConfig{
-			Secret:      k.String("jwt.secret"),
-			ExpireHours: k.Int("jwt.expire_hours"),
-		},
-		Log: LogConfig{
-			Level:  k.String("log.level"),
-			Path:   k.String("log.path"),
-			Format: k.String("log.format"),
-		},
-	}
-
-	return &cfg, nil
+	fmt.Println("========================================")
+	fmt.Println("         Current Configuration")
+	fmt.Println("========================================")
+	fmt.Printf("Server:\n")
+	fmt.Printf("  Port: %d\n", c.Server.Port)
+	fmt.Printf("  Mode: %s\n", c.Server.Mode)
+	fmt.Println()
+	fmt.Printf("Database:\n")
+	fmt.Printf("  Path: %s\n", c.Database.Path)
+	fmt.Printf("  LogLevel: %s\n", c.Database.LogLevel)
+	fmt.Println()
+	fmt.Printf("JWT:\n")
+	fmt.Printf("  Secret: %s\n", maskSecret(c.JWT.Secret))
+	fmt.Printf("  ExpireHours: %d\n", c.JWT.ExpireHours)
+	fmt.Println()
+	fmt.Printf("Log:\n")
+	fmt.Printf("  Level: %s\n", c.Log.Level)
+	fmt.Printf("  Path: %s\n", c.Log.Path)
+	fmt.Printf("  Format: %s\n", c.Log.Format)
+	fmt.Println("========================================")
 }

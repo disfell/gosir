@@ -1,6 +1,32 @@
 basePath: /
 definitions:
-  auth.LoginRequest:
+  gosir_internal_common.Response:
+    properties:
+      code:
+        description: 业务状态码
+        example: 0
+        type: integer
+      data:
+        description: 响应数据
+      message:
+        description: 响应消息
+        example: success
+        type: string
+    type: object
+  internal_common.Response:
+    properties:
+      code:
+        description: 业务状态码
+        example: 0
+        type: integer
+      data:
+        description: 响应数据
+      message:
+        description: 响应消息
+        example: success
+        type: string
+    type: object
+  internal_handler_auth.LoginRequest:
     properties:
       account:
         description: 账号（邮箱或手机号）
@@ -14,7 +40,7 @@ definitions:
     - account
     - password
     type: object
-  auth.LoginResponse:
+  internal_handler_auth.LoginResponse:
     properties:
       token:
         description: JWT token
@@ -23,7 +49,7 @@ definitions:
       user:
         description: 用户信息
     type: object
-  auth.RefreshTokenRequest:
+  internal_handler_auth.RefreshTokenRequest:
     properties:
       token:
         description: 当前 token
@@ -32,24 +58,22 @@ definitions:
     required:
     - token
     type: object
-  auth.RefreshTokenResponse:
+  internal_handler_auth.RefreshTokenResponse:
     properties:
       token:
         description: 新 token
         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
         type: string
     type: object
-  common.Response:
+  internal_handler_system.HealthResponse:
     properties:
-      code:
-        description: 业务状态码
-        example: 0
-        type: integer
-      data:
-        description: 响应数据
-      message:
-        description: 响应消息
-        example: success
+      status:
+        description: 状态
+        example: ok
+        type: string
+      timestamp:
+        description: 时间戳
+        example: "2026-01-08T10:00:00Z"
         type: string
     type: object
   internal_handler_user.CreateUserRequest:
@@ -89,7 +113,30 @@ definitions:
     - name
     - password
     type: object
-  model.UserResponse:
+  internal_handler_user.UpdateUserRequest:
+    properties:
+      avatar:
+        description: 头像
+        example: http://example.com/new-avatar.jpg
+        type: string
+      email:
+        description: 邮箱
+        example: lisi@example.com
+        type: string
+      name:
+        description: 姓名
+        example: 李四
+        type: string
+      phone:
+        description: 手机号
+        example: "13900139000"
+        type: string
+      status:
+        description: 状态：1-正常 2-禁用
+        example: 2
+        type: integer
+    type: object
+  internal_handler_user.UserResponse:
     properties:
       avatar:
         example: http://example.com/avatar.jpg
@@ -119,40 +166,6 @@ definitions:
         example: "2026-01-08T10:00:00Z"
         type: string
     type: object
-  system.HealthResponse:
-    properties:
-      status:
-        description: 状态
-        example: ok
-        type: string
-      timestamp:
-        description: 时间戳
-        example: "2026-01-08T10:00:00Z"
-        type: string
-    type: object
-  user.UpdateUserRequest:
-    properties:
-      avatar:
-        description: 头像
-        example: http://example.com/new-avatar.jpg
-        type: string
-      email:
-        description: 邮箱
-        example: lisi@example.com
-        type: string
-      name:
-        description: 姓名
-        example: 李四
-        type: string
-      phone:
-        description: 手机号
-        example: "13900139000"
-        type: string
-      status:
-        description: 状态：1-正常 2-禁用
-        example: 2
-        type: integer
-    type: object
 host: localhost:1323
 info:
   contact:
@@ -179,17 +192,17 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/common.Response'
+            - $ref: '#/definitions/gosir_internal_common.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/model.UserResponse'
+                    $ref: '#/definitions/internal_handler_user.UserResponse'
                   type: array
               type: object
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/gosir_internal_common.Response'
       security:
       - Bearer: []
       summary: 获取用户列表
@@ -213,19 +226,19 @@ paths:
           description: Created
           schema:
             allOf:
-            - $ref: '#/definitions/common.Response'
+            - $ref: '#/definitions/gosir_internal_common.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/model.UserResponse'
+                  $ref: '#/definitions/internal_handler_user.UserResponse'
               type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/gosir_internal_common.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/gosir_internal_common.Response'
       security:
       - Bearer: []
       summary: 创建用户
@@ -248,11 +261,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/gosir_internal_common.Response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/gosir_internal_common.Response'
       security:
       - Bearer: []
       summary: 删除用户
@@ -275,15 +288,15 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/common.Response'
+            - $ref: '#/definitions/gosir_internal_common.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/model.UserResponse'
+                  $ref: '#/definitions/internal_handler_user.UserResponse'
               type: object
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/gosir_internal_common.Response'
       security:
       - Bearer: []
       summary: 获取用户详情
@@ -304,7 +317,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/user.UpdateUserRequest'
+          $ref: '#/definitions/internal_handler_user.UpdateUserRequest'
       produces:
       - application/json
       responses:
@@ -312,19 +325,19 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/common.Response'
+            - $ref: '#/definitions/gosir_internal_common.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/model.UserResponse'
+                  $ref: '#/definitions/internal_handler_user.UserResponse'
               type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/gosir_internal_common.Response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/gosir_internal_common.Response'
       security:
       - Bearer: []
       summary: 更新用户
@@ -341,7 +354,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/auth.LoginRequest'
+          $ref: '#/definitions/internal_handler_auth.LoginRequest'
       produces:
       - application/json
       responses:
@@ -349,19 +362,19 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/common.Response'
+            - $ref: '#/definitions/gosir_internal_common.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/auth.LoginResponse'
+                  $ref: '#/definitions/internal_handler_auth.LoginResponse'
               type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/gosir_internal_common.Response'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/gosir_internal_common.Response'
       summary: 用户登录
       tags:
       - 认证
@@ -376,11 +389,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/gosir_internal_common.Response'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/gosir_internal_common.Response'
       security:
       - Bearer: []
       summary: 用户登出
@@ -397,7 +410,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/auth.RefreshTokenRequest'
+          $ref: '#/definitions/internal_handler_auth.RefreshTokenRequest'
       produces:
       - application/json
       responses:
@@ -405,19 +418,19 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/common.Response'
+            - $ref: '#/definitions/gosir_internal_common.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/auth.RefreshTokenResponse'
+                  $ref: '#/definitions/internal_handler_auth.RefreshTokenResponse'
               type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/gosir_internal_common.Response'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/gosir_internal_common.Response'
       summary: 刷新 token
       tags:
       - 认证
@@ -432,7 +445,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/system.HealthResponse'
+            $ref: '#/definitions/internal_handler_system.HealthResponse'
       summary: 健康检查
       tags:
       - 系统

@@ -4,13 +4,13 @@ server:
 
 database:
   path: data.db  # SQLite 数据库文件路径
-  log_level: info  # silent, error, warn, info
+  logLevel: info  # silent, error, warn, info
 
 jwt:
   secret: XC0VfuGRumdG47PqxvqC7OIDWuyGY0bUVr6+o1CHHoY=
-  expire_hours: 24
+  expireHours: 24
 
 log:
-  level: info
+  level: debug
   path: logs/app.log
   format: json

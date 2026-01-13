@@ -1,25 +1,28 @@
 services:
   gosir:
+    image: gosir:latest
     build:
       context: ..
       dockerfile: docker/Dockerfile
+      tags:
+        - gosir:latest
     container_name: gosir-app
     ports:
-      - "${GOSIR_PORT:-1323}:1323"
+      - "${GOSIR_SERVER_PORT:-1323}:1323"
     environment:
       # 服务器配置
-      - SERVER_PORT=1323
-      - SERVER_MODE=release
+      - GOSIR_SERVER_PORT=1323
+      - GOSIR_SERVER_MODE=release
       # 数据库配置
-      - DATABASE_PATH=/app/data/data.db
-      - DATABASE_LOG_LEVEL=warn
-      # JWT配置 (生产环境请修改)
-      - JWT_SECRET=${JWT_SECRET:-XC0VfuGRumdG47PqxvqC7OIDWuyGY0bUVr6+o1CHHoY=}
-      - JWT_EXPIRE_HOURS=24
+      - GOSIR_DATABASE_PATH=/app/data/data.db
+      - GOSIR_DATABASE_LOG_LEVEL=warn
+      # JWT配置
+      - GOSIR_JWT_SECRET=XC0VfuGRumdG47PqxvqC7OIDWuyGY0bUVr6+o1CHHoY=
+      - GOSIR_JWT_EXPIRE_HOURS=24
       # 日志配置
-      - LOG_LEVEL=info
-      - LOG_PATH=/app/logs/app.log
-      - LOG_FORMAT=json
+      - GOSIR_LOG_LEVEL=info
+      - GOSIR_LOG_PATH=/app/logs/app.log
+      - GOSIR_LOG_FORMAT=json
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs

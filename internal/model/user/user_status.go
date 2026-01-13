@@ -4,7 +4,7 @@ package model
 type UserStatus int
 
 const (
-	UserStatusNormal  UserStatus = 1 // 正常
+	UserStatusNormal   UserStatus = 1 // 正常
 	UserStatusDisabled UserStatus = 2 // 禁用
 )
 

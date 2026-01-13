@@ -48,7 +48,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/common.Response"
+                                    "$ref": "#/definitions/gosir_internal_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -56,7 +56,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.UserResponse"
+                                                "$ref": "#/definitions/internal_handler_user.UserResponse"
                                             }
                                         }
                                     }
@@ -67,7 +67,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     }
                 }
@@ -106,13 +106,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/common.Response"
+                                    "$ref": "#/definitions/gosir_internal_common.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.UserResponse"
+                                            "$ref": "#/definitions/internal_handler_user.UserResponse"
                                         }
                                     }
                                 }
@@ -122,13 +122,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     }
                 }
@@ -167,13 +167,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/common.Response"
+                                    "$ref": "#/definitions/gosir_internal_common.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.UserResponse"
+                                            "$ref": "#/definitions/internal_handler_user.UserResponse"
                                         }
                                     }
                                 }
@@ -183,7 +183,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     }
                 }
@@ -219,7 +219,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.UpdateUserRequest"
+                            "$ref": "#/definitions/internal_handler_user.UpdateUserRequest"
                         }
                     }
                 ],
@@ -229,13 +229,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/common.Response"
+                                    "$ref": "#/definitions/gosir_internal_common.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.UserResponse"
+                                            "$ref": "#/definitions/internal_handler_user.UserResponse"
                                         }
                                     }
                                 }
@@ -245,13 +245,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     }
                 }
@@ -286,13 +286,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     }
                 }
@@ -318,7 +318,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.LoginRequest"
+                            "$ref": "#/definitions/internal_handler_auth.LoginRequest"
                         }
                     }
                 ],
@@ -328,13 +328,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/common.Response"
+                                    "$ref": "#/definitions/gosir_internal_common.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/auth.LoginResponse"
+                                            "$ref": "#/definitions/internal_handler_auth.LoginResponse"
                                         }
                                     }
                                 }
@@ -344,13 +344,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     }
                 }
@@ -378,13 +378,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     }
                 }
@@ -410,7 +410,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.RefreshTokenRequest"
+                            "$ref": "#/definitions/internal_handler_auth.RefreshTokenRequest"
                         }
                     }
                 ],
@@ -420,13 +420,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/common.Response"
+                                    "$ref": "#/definitions/gosir_internal_common.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/auth.RefreshTokenResponse"
+                                            "$ref": "#/definitions/internal_handler_auth.RefreshTokenResponse"
                                         }
                                     }
                                 }
@@ -436,13 +436,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/gosir_internal_common.Response"
                         }
                     }
                 }
@@ -465,7 +465,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/system.HealthResponse"
+                            "$ref": "#/definitions/internal_handler_system.HealthResponse"
                         }
                     }
                 }
@@ -473,7 +473,43 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "auth.LoginRequest": {
+        "gosir_internal_common.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务状态码",
+                    "type": "integer",
+                    "example": 0
+                },
+                "data": {
+                    "description": "响应数据"
+                },
+                "message": {
+                    "description": "响应消息",
+                    "type": "string",
+                    "example": "success"
+                }
+            }
+        },
+        "internal_common.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "业务状态码",
+                    "type": "integer",
+                    "example": 0
+                },
+                "data": {
+                    "description": "响应数据"
+                },
+                "message": {
+                    "description": "响应消息",
+                    "type": "string",
+                    "example": "success"
+                }
+            }
+        },
+        "internal_handler_auth.LoginRequest": {
             "type": "object",
             "required": [
                 "account",
@@ -492,7 +528,7 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.LoginResponse": {
+        "internal_handler_auth.LoginResponse": {
             "type": "object",
             "properties": {
                 "token": {
@@ -505,7 +541,7 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.RefreshTokenRequest": {
+        "internal_handler_auth.RefreshTokenRequest": {
             "type": "object",
             "required": [
                 "token"
@@ -518,7 +554,7 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.RefreshTokenResponse": {
+        "internal_handler_auth.RefreshTokenResponse": {
             "type": "object",
             "properties": {
                 "token": {
@@ -528,21 +564,18 @@ const docTemplate = `{
                 }
             }
         },
-        "common.Response": {
+        "internal_handler_system.HealthResponse": {
             "type": "object",
             "properties": {
-                "code": {
-                    "description": "业务状态码",
-                    "type": "integer",
-                    "example": 0
-                },
-                "data": {
-                    "description": "响应数据"
-                },
-                "message": {
-                    "description": "响应消息",
+                "status": {
+                    "description": "状态",
                     "type": "string",
-                    "example": "success"
+                    "example": "ok"
+                },
+                "timestamp": {
+                    "description": "时间戳",
+                    "type": "string",
+                    "example": "2026-01-08T10:00:00Z"
                 }
             }
         },
@@ -593,7 +626,37 @@ const docTemplate = `{
                 }
             }
         },
-        "model.UserResponse": {
+        "internal_handler_user.UpdateUserRequest": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "description": "头像",
+                    "type": "string",
+                    "example": "http://example.com/new-avatar.jpg"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string",
+                    "example": "lisi@example.com"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string",
+                    "example": "李四"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string",
+                    "example": "13900139000"
+                },
+                "status": {
+                    "description": "状态：1-正常 2-禁用",
+                    "type": "integer",
+                    "example": 2
+                }
+            }
+        },
+        "internal_handler_user.UserResponse": {
             "type": "object",
             "properties": {
                 "avatar": {
@@ -631,51 +694,6 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string",
                     "example": "2026-01-08T10:00:00Z"
-                }
-            }
-        },
-        "system.HealthResponse": {
-            "type": "object",
-            "properties": {
-                "status": {
-                    "description": "状态",
-                    "type": "string",
-                    "example": "ok"
-                },
-                "timestamp": {
-                    "description": "时间戳",
-                    "type": "string",
-                    "example": "2026-01-08T10:00:00Z"
-                }
-            }
-        },
-        "user.UpdateUserRequest": {
-            "type": "object",
-            "properties": {
-                "avatar": {
-                    "description": "头像",
-                    "type": "string",
-                    "example": "http://example.com/new-avatar.jpg"
-                },
-                "email": {
-                    "description": "邮箱",
-                    "type": "string",
-                    "example": "lisi@example.com"
-                },
-                "name": {
-                    "description": "姓名",
-                    "type": "string",
-                    "example": "李四"
-                },
-                "phone": {
-                    "description": "手机号",
-                    "type": "string",
-                    "example": "13900139000"
-                },
-                "status": {
-                    "description": "状态：1-正常 2-禁用",
-                    "type": "integer",
-                    "example": 2
                 }
             }
         }

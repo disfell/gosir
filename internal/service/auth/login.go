@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"gosir/internal/model"
+	"gosir/internal/model/user"
 	"gosir/internal/service/user"
 
 	"golang.org/x/crypto/bcrypt"
